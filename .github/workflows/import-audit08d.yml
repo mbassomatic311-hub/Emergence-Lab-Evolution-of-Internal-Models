@@ -2,7 +2,7 @@ name: Verify and import Experiment 08D research
 on:
   push:
     branches: ["research/exp08-development-2d"]
-    paths: ["AUDIT08D_SOURCE_PAYLOAD.txt"]
+    paths: ["AUDIT08D_SOURCE_PAYLOAD.txt", ".github/workflows/import-audit08d.yml"]
 
 permissions:
   contents: write
@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
       - name: Verify source archive and extract safely
         run: |
           python - <<'PY'
@@ -45,7 +45,7 @@ jobs:
           print('Source SHA-256 valid. Three research source files extracted.')
           PY
       - name: Install dependencies
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt numpy==2.3.5
       - name: Run all Experiment 08 software tests
         working-directory: experiments/exp08
         env:
@@ -57,7 +57,7 @@ jobs:
         env:
           OPENBLAS_NUM_THREADS: '1'
         run: |
-          python audit08d_learning.py --stable-train 192 --shift-train 192 --test 72 --val 48 --epochs 36 --policy 72 --out development_learning08d
+          python audit08d_learning.py --stable-train 192 --shift-train 192 --test 72 --val 48 --epochs 36 --policy 72 --out development_learning08d > /tmp/exp08d-run.log
           echo "2243352e60b70c58ad0748b5efcef7dbaf08cee1b6d63372ca1c70bac4058d99  development_learning08d/summary.json" | sha256sum -c -
           echo "072c05e7e06a17bb160b2d5df447cb8bec2fbc59e3e6d15b5005b3d587407ab1  development_learning08d/model_comparisons.csv" | sha256sum -c -
           echo "8f8071f649cb61b06e7ab93f4ce545812b821a097dcad00ee5a4d0ba73537344  development_learning08d/policy_episode_results.csv" | sha256sum -c -
