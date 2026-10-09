@@ -89,22 +89,30 @@ def fit_score(trials,seed=7):
             # standardization performed on TRAINING period only
             a=X[train][:,cols].copy();b=X[test][:,cols].copy()
             mu=a.mean(axis=0);sd=np.maximum(a.std(axis=0),1e-6)
-            if kind=="history_shuffled":
+            if kind in ("history_shuffled","past_shuffled_time_preserved"):
                 rng=np.random.default_rng(seed)
-                a[:,2:]=a[rng.permutation(len(a)),2:]
+                # Existing control also shuffles elapsed-trial position.
+                # New stronger control preserves time and shuffles ONLY prior reports.
+                end=5 if kind=="past_shuffled_time_preserved" else 6
+                a[:,2:end]=a[rng.permutation(len(a)),2:end]
             clf=LogisticRegression(C=1.0,max_iter=600)
             clf.fit((a-mu)/sd,y[train])
             p=clf.predict_proba((b-mu)/sd)[:,1]
         p=np.clip(p,1e-5,1-1e-5)
         return float(log_loss(y[test],p,labels=[0,1])),float(brier_score_loss(y[test],p))
     for name,cols in [("constant",[]),("stimulus",[0,1]),
+                      ("stimulus_time",[0,1,5]),
+                      ("stimulus_past",[0,1,2,3,4]),
                       ("stimulus_history",[0,1,2,3,4,5]),
-                      ("history_shuffled",[0,1,2,3,4,5])]:
+                      ("history_shuffled",[0,1,2,3,4,5]),
+                      ("past_shuffled_time_preserved",[0,1,2,3,4,5])]:
         ll,br=detection(name,cols)
         scores[name+"_logloss"]=ll
         scores[name+"_brier"]=br
 
     for name,cols in [("constant",[]),("stimulus",[0,1]),
+                      ("stimulus_time",[0,1,5]),
+                      ("stimulus_past",[0,1,2,3,4]),
                       ("stimulus_history",[0,1,2,3,4,5])]:
         if name=="constant":predict=np.full(len(test),np.mean(conf[train]))
         else:
@@ -152,9 +160,14 @@ def main():
         "contrasts":[
             boot_contrast(all_results,"stimulus_logloss","constant_logloss"),
             boot_contrast(all_results,"stimulus_history_logloss","stimulus_logloss"),
+            boot_contrast(all_results,"stimulus_history_logloss","stimulus_time_logloss"),
+            boot_contrast(all_results,"stimulus_past_logloss","stimulus_logloss"),
+            boot_contrast(all_results,"past_shuffled_time_preserved_logloss","stimulus_time_logloss"),
             boot_contrast(all_results,"history_shuffled_logloss","stimulus_logloss"),
             boot_contrast(all_results,"stimulus_confidence_mse","constant_confidence_mse"),
-            boot_contrast(all_results,"stimulus_history_confidence_mse","stimulus_confidence_mse")
+            boot_contrast(all_results,"stimulus_history_confidence_mse","stimulus_confidence_mse"),
+            boot_contrast(all_results,"stimulus_history_confidence_mse","stimulus_time_confidence_mse"),
+            boot_contrast(all_results,"stimulus_past_confidence_mse","stimulus_confidence_mse")
         ],
         "caveats":"Stimulus intensity adjusted by adaptive staircase; past choices are correlated with experimental stimulus adjustments. Predictive association is not a causal memory effect. Catch flags inferred from behavioral SDT coding. Model hyperparameters and design not preregistered."
     }
