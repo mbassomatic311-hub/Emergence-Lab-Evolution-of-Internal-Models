@@ -1,0 +1,84 @@
+name: Validate and import Study 09 research protocol
+on:
+  push:
+    branches: ["research/study09-methods-review"]
+    paths: ["STUDY09_IMPORT_PAYLOAD.txt"]
+
+permissions:
+  contents: write
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact research packet and safe extraction
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,hashlib,io,lzma,tarfile
+          from pathlib import Path, PurePosixPath
+          inp=Path('STUDY09_IMPORT_PAYLOAD.txt')
+          compressed=base64.b64decode(inp.read_text().strip(),validate=True)
+          if hashlib.sha256(compressed).hexdigest()!='3da3491f4bad169c7411013e6003491bd227d92ded89beb29e0166da0a1f4981':
+              raise SystemExit('Study 09 archive digest mismatch')
+          raw=lzma.decompress(compressed,memlimit=256_000_000)
+          if len(raw)>250_000:raise SystemExit('Research packet unexpectedly large')
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as archive:
+              entries=archive.getmembers()
+              if len(entries)!=9 or len({m.name for m in entries})!=9:
+                  raise SystemExit('Unexpected archive entry count')
+              contents={}
+              for m in entries:
+                  path=PurePosixPath(m.name)
+                  if (not m.isfile() or m.size>100_000 or path.is_absolute()
+                      or '..' in path.parts or path.parts[:2]!=('studies','self_world09')
+                      or Path(m.name).exists()):
+                      raise SystemExit('Bad path or overwrite: '+m.name)
+                  contents[m.name]=archive.extractfile(m).read()
+              manifest_path='studies/self_world09/SHA256SUMS.txt'
+              lines=contents[manifest_path].decode().splitlines()
+              recorded={}
+              for line in lines:
+                  h,p=line.split('  ',1)
+                  if p in recorded or len(h)!=64:raise SystemExit('Malformed manifest')
+                  recorded[p]=h
+              if set(recorded)!=set(contents)-{manifest_path}:
+                  raise SystemExit('Incomplete manifest')
+              for path,h in recorded.items():
+                  if hashlib.sha256(contents[path]).hexdigest()!=h:
+                      raise SystemExit('Mismatched file: '+path)
+              for path,payload in contents.items():
+                  f=Path(path);f.parent.mkdir(parents=True,exist_ok=True)
+                  f.write_bytes(payload)
+          print('Verified 9 research protocol files; no pre-registration and no confirmatory data.')
+          PY
+      - name: Test research and information leakage preflight
+        working-directory: studies/self_world09
+        run: |
+          python -m unittest -v test_preflight.py
+          python preflight.py --draft-check
+      - name: Assert that confirmatory execution remains blocked
+        working-directory: studies/self_world09
+        shell: bash
+        run: |
+          set +e
+          python preflight.py --confirmatory-check > /tmp/study09_blockers.log
+          status=$?
+          set -e
+          test "$status" -eq 2
+          grep -q 'Missing external immutable preregistration URL' /tmp/study09_blockers.log
+          grep -q 'No environment has been independently authored' /tmp/study09_blockers.log
+          echo "Confirmatory study correctly BLOCKED. This is the expected state."
+      - name: Commit reviewed draft packet to methods-only branch
+        shell: bash
+        run: |
+          rm -f STUDY09_IMPORT_PAYLOAD.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Add Study 09 falsifiable protocol, prior-art screen and preflight gates"
+          git push origin HEAD:research/study09-methods-review
