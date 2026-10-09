@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "study_id": "SELF_WORLD_09",
+  "status": "DRAFT_NOT_PREREGISTERED",
+  "claims_consciousness": false,
+  "confirmatory_data_collected": false,
+  "independent_unit": "independent_evolutionary_population",
+  "confirmatory_seed_list": null,
+  "environments": [
+    {"id": "prospective_sensors_A", "implemented_by_independent_reviewer": false, "description": "New task family with motor and environmental interventions; not existing 08I"},
+    {"id": "prospective_sensors_B", "implemented_by_independent_reviewer": false, "description": "New independently authored physically distinct task, e.g. contact-based manipulation"}
+  ],
+  "baselines": ["random_policy", "reactive_policy", "one_step_comparator", "bayesian_system_identifier", "nearest_neighbor_memory", "history_feedforward", "fixed_recurrent", "topology_evolving", "random_fitness", "no_inheritance"],
+  "ablations": ["motor_copy_scramble_preserve_rng", "latent_state_lesion_matched_compute", "environment_only_disturbance", "sensor_bias_intervention", "action_history_without_recurrence", "indistinguishable_cause_abstention"],
+  "reviewer_signoff_record": null,
+  "preregistration_url": null,
+  "sample_size_justification": null,
+  "frozen_analysis_plan_hash": null,
+  "frozen_code_commit": null,
+  "compute_and_sensor_budget_audit": null,
+  "independent_environment_review": null,
+  "prior_art_review_signoff": null
+}
