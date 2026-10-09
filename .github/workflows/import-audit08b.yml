@@ -2,7 +2,7 @@ name: Import Experiment 08 fitness and world audits
 on:
   push:
     branches: ["research/exp08-development-2d"]
-    paths: ["AUDIT_08B_IMPORT_PAYLOAD.txt"]
+    paths: ["AUDIT_08B_IMPORT_PAYLOAD.txt", ".github/workflows/import-audit08b.yml"]
 
 permissions:
   contents: write
@@ -26,7 +26,7 @@ jobs:
           expected='3fadafdad45522bb5a17374c86cca9805e03de19439def85c5a1552c7ef69f2e'
           if hashlib.sha256(content).hexdigest()!=expected:
               raise SystemExit('Payload checksum does not match recorded audit SHA256')
-          raw=lzma.decompress(content,memlimit=50_000_000)
+          raw=lzma.decompress(content,memlimit=256_000_000)
           with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as package_tar:
               items=package_tar.getmembers()
               names=[m.name for m in items]
