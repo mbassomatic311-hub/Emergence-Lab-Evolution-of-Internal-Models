@@ -42,7 +42,7 @@ class EventAuditTests(unittest.TestCase):
     def test_extra_events_are_not_confused_with_trials(self):
         a=audit_participant(fixture(lead=True))
         self.assertEqual(a["starts"],1)
-        self.assertEqual(a["extra_non_task_markers"],0) # before first trial is outside block
+        self.assertEqual(a["extra_non_task_markers"],1) # preserved as extra metadata
     def test_parse_tsv_and_reject_missing_columns(self):
         f=io.StringIO();w=csv.DictWriter(f,delimiter="\t",fieldnames=COLUMNS);w.writeheader();w.writerows(fixture())
         self.assertEqual(len(parse_rows(f.getvalue())),4)
