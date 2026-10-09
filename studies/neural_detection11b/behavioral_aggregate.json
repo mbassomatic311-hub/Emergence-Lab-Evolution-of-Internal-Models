@@ -1,0 +1,78 @@
+{
+  "caveats": "Stimulus intensity adjusted by adaptive staircase; past choices are correlated with experimental stimulus adjustments. Predictive association is not a causal memory effect. Catch flags inferred from behavioral SDT coding. Model hyperparameters and design not preregistered.",
+  "contrasts": [
+    {
+      "average_participant_difference": -0.03823202187887212,
+      "comparison": "stimulus_logloss minus constant_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0748971666494216,
+        0.007406687652345624
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.016019338395910854,
+      "comparison": "stimulus_history_logloss minus stimulus_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.05998581059513036,
+        0.034057102504605426
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.0039058548307326236,
+      "comparison": "history_shuffled_logloss minus stimulus_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.019953662015689017,
+        0.013797056314755144
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.000637103700063606,
+      "comparison": "stimulus_confidence_mse minus constant_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0014067216216517714,
+        -2.3829968203201662e-05
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.0012649732812064823,
+      "comparison": "stimulus_history_confidence_mse minus stimulus_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0021948940612914686,
+        -0.0004132048108172995
+      ],
+      "number_of_independent_participants": 18
+    }
+  ],
+  "mean_per_participant": {
+    "constant_brier": 0.23439448930741177,
+    "constant_confidence_mse": 0.017940220670920545,
+    "constant_logloss": 0.661522264905562,
+    "heldout_accuracy": 0.5467642075612164,
+    "heldout_mean_confidence": 0.8229519379253832,
+    "heldout_report_yes_rate": 0.3729475212474162,
+    "history_shuffled_brier": 0.2168315890061802,
+    "history_shuffled_logloss": 0.6193843881959573,
+    "stimulus_brier": 0.2203935436831382,
+    "stimulus_confidence_mse": 0.01730311697085694,
+    "stimulus_history_brier": 0.21157032580324853,
+    "stimulus_history_confidence_mse": 0.016038143689650456,
+    "stimulus_history_logloss": 0.607270904630779,
+    "stimulus_logloss": 0.6232902430266899
+  },
+  "n_heldout_trials": 3032,
+  "n_independent_participants": 18,
+  "n_training_trials": 5630,
+  "research_status": "EXPLORATORY human behavior only; NO EEG analyzed; not consciousness measurement",
+  "source": "OpenNeuro ds001785 v1.1.1 public task event tables",
+  "train_test": "within participant earliest 65% starts trained, latest 35% untouched test",
+  "upstream_commit": "53be0167e7068aba693d57923eb4c9c037878159"
+}
