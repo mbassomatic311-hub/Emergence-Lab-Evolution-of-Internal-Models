@@ -1,0 +1,225 @@
+{
+  "average": {
+    "cycle": {
+      "distinct_probe_commands": 4.0,
+      "inertial_mse": 0.025424140295695865,
+      "knn_range_mse": 0.0451881726920779,
+      "nonzero_probes": 30.0,
+      "prequential_early": 0.04671573211898096,
+      "prequential_late": 0.03778642002378016,
+      "range_mse": 0.052173371743993044
+    },
+    "least_seen": {
+      "distinct_probe_commands": 4.0,
+      "inertial_mse": 0.025256702708019947,
+      "knn_range_mse": 0.04729868004163209,
+      "nonzero_probes": 30.0,
+      "prequential_early": 0.046670746509935364,
+      "prequential_late": 0.0381659248734416,
+      "range_mse": 0.05094737625105033
+    },
+    "no_probes": {
+      "distinct_probe_commands": 0.0,
+      "inertial_mse": 0.0658795437305986,
+      "knn_range_mse": 0.07582342507358807,
+      "nonzero_probes": 0.0,
+      "prequential_early": 0.03708755384412895,
+      "prequential_late": 0.03303723699184701,
+      "range_mse": 0.11794289601561027
+    },
+    "random": {
+      "distinct_probe_commands": 4.0,
+      "inertial_mse": 0.034576954663211056,
+      "knn_range_mse": 0.05414399197325147,
+      "nonzero_probes": 30.0,
+      "prequential_early": 0.04636939219168301,
+      "prequential_late": 0.0387094208361533,
+      "range_mse": 0.06565488518485303
+    },
+    "single_action": {
+      "distinct_probe_commands": 1.0,
+      "inertial_mse": 0.08492155549006089,
+      "knn_range_mse": 0.07469448356792775,
+      "nonzero_probes": 30.0,
+      "prequential_early": 0.04447328975319979,
+      "prequential_late": 0.03746191410035366,
+      "range_mse": 0.18493540731482838
+    },
+    "uncertainty": {
+      "distinct_probe_commands": 4.0,
+      "inertial_mse": 0.026241075379436967,
+      "knn_range_mse": 0.04776999382777127,
+      "nonzero_probes": 30.0,
+      "prequential_early": 0.04579128056438848,
+      "prequential_late": 0.038970503944781645,
+      "range_mse": 0.04898877224514302
+    }
+  },
+  "average_by_cause_knn_range_mse": {
+    "cycle": {
+      "external": 0.043906700491378126,
+      "motor": 0.04072139473616769,
+      "motor_external": 0.04406185461648598,
+      "none": 0.03957215923098257,
+      "sensor": 0.03957215923098257,
+      "unknown_nonlinear": 0.06329476784647046
+    },
+    "least_seen": {
+      "external": 0.04457210431185704,
+      "motor": 0.0432568264442311,
+      "motor_external": 0.04814869491285009,
+      "none": 0.04242340761747989,
+      "sensor": 0.04242340761747989,
+      "unknown_nonlinear": 0.06296763934589453
+    },
+    "no_probes": {
+      "external": 0.06626403014829892,
+      "motor": 0.08628880567586805,
+      "motor_external": 0.0637764136348416,
+      "none": 0.08473917868511212,
+      "sensor": 0.08473917868511212,
+      "unknown_nonlinear": 0.06913294361229556
+    },
+    "random": {
+      "external": 0.051086300409650696,
+      "motor": 0.05327425824468194,
+      "motor_external": 0.051560461955240854,
+      "none": 0.05355214326134563,
+      "sensor": 0.05355214326134563,
+      "unknown_nonlinear": 0.061838644707244095
+    },
+    "single_action": {
+      "external": 0.068640670909945,
+      "motor": 0.08142437521761296,
+      "motor_external": 0.06083391422273942,
+      "none": 0.08414607394125721,
+      "sensor": 0.08414607394125721,
+      "unknown_nonlinear": 0.06897579317475469
+    },
+    "uncertainty": {
+      "external": 0.0467235370212993,
+      "motor": 0.04524527820236918,
+      "motor_external": 0.04481845640424276,
+      "none": 0.04246403520163866,
+      "sensor": 0.0428497486640217,
+      "unknown_nonlinear": 0.06451890747305601
+    }
+  },
+  "average_by_cause_range_mse": {
+    "cycle": {
+      "external": 0.04207456829531028,
+      "motor": 0.043585347060420526,
+      "motor_external": 0.04328807057820952,
+      "none": 0.03684544572396641,
+      "sensor": 0.037001864630102806,
+      "unknown_nonlinear": 0.11024493417594872
+    },
+    "least_seen": {
+      "external": 0.04120928123219373,
+      "motor": 0.04668633082790594,
+      "motor_external": 0.04200621058859466,
+      "none": 0.03654127574780134,
+      "sensor": 0.037077266967467847,
+      "unknown_nonlinear": 0.10216389214233845
+    },
+    "no_probes": {
+      "external": 0.0656910505834638,
+      "motor": 0.10528680429561366,
+      "motor_external": 0.06327643935813693,
+      "none": 0.09944505658888336,
+      "sensor": 0.09971503961621969,
+      "unknown_nonlinear": 0.27424298565134414
+    },
+    "random": {
+      "external": 0.04705457910562406,
+      "motor": 0.10470005558756686,
+      "motor_external": 0.04686207762967582,
+      "none": 0.056801891087357635,
+      "sensor": 0.0539007734468439,
+      "unknown_nonlinear": 0.08460993425204995
+    },
+    "single_action": {
+      "external": 0.12054277442505668,
+      "motor": 0.18888213088629388,
+      "motor_external": 0.13710883449363198,
+      "none": 0.19124121297464194,
+      "sensor": 0.18888867744356608,
+      "unknown_nonlinear": 0.2829488136657798
+    },
+    "uncertainty": {
+      "external": 0.04229520956339624,
+      "motor": 0.04897762901641892,
+      "motor_external": 0.044087473524391706,
+      "none": 0.03472757108945842,
+      "sensor": 0.03607431055483088,
+      "unknown_nonlinear": 0.08777043972236197
+    }
+  },
+  "causes": [
+    "none",
+    "motor",
+    "external",
+    "sensor",
+    "motor_external",
+    "unknown_nonlinear"
+  ],
+  "common_context_times": [
+    110,
+    125,
+    140
+  ],
+  "n_seed_clusters": 24,
+  "noise": 0.13,
+  "paired_contrasts": {
+    "cycle": {
+      "active_better_seeds": 15,
+      "active_worse_seeds": 9,
+      "ci95_exploratory_seed_bootstrap": [
+        -0.009107713474488221,
+        0.001878918552196789
+      ],
+      "mean_active_minus_baseline": -0.0031845994988500223,
+      "ties": 0
+    },
+    "least_seen": {
+      "active_better_seeds": 11,
+      "active_worse_seeds": 13,
+      "ci95_exploratory_seed_bootstrap": [
+        -0.00780254012222162,
+        0.0046223920342221515
+      ],
+      "mean_active_minus_baseline": -0.0019586040059073064,
+      "ties": 0
+    },
+    "random": {
+      "active_better_seeds": 19,
+      "active_worse_seeds": 5,
+      "ci95_exploratory_seed_bootstrap": [
+        -0.027149100012351265,
+        -0.00811057451628209
+      ],
+      "mean_active_minus_baseline": -0.01666611293971002,
+      "ties": 0
+    },
+    "single_action": {
+      "active_better_seeds": 23,
+      "active_worse_seeds": 1,
+      "ci95_exploratory_seed_bootstrap": [
+        -0.16536092282966336,
+        -0.10744995944259847
+      ],
+      "mean_active_minus_baseline": -0.13594663506968538,
+      "ties": 0
+    }
+  },
+  "policies": [
+    "uncertainty",
+    "random",
+    "cycle",
+    "least_seen",
+    "single_action",
+    "no_probes"
+  ],
+  "probe_slots": 30,
+  "status": "EXPLORATORY development only; unregistered; no consciousness measure"
+}
