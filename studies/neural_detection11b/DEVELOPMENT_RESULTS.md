@@ -73,3 +73,43 @@ python inspect_signal.py
 Independent GitHub runs: [behavioral aggregate and seven tests](https://github.com/mbassomatic311-hub/Emergence-Lab-Evolution-of-Internal-Models/actions/runs/37945974088); [real EEG auxiliary recording and five reader tests](https://github.com/mbassomatic311-hub/Emergence-Lab-Evolution-of-Internal-Models/actions/runs/37945301050). See `behavioral_aggregate.json` for full descriptive contrasts and `audit_events.py` for event inclusion decisions.
 
 **Bottom line:** Prior behavioral information provides a limited, exploratory prediction advantage in this task, especially for subsequent confidence reports, but this may come from the adaptive task itself. We have real neural recording access, **not valid EEG timing or a compression finding**. Consciousness or extra dimensions are not measured.
+
+## 2026-10-09 continuation: additional held-out controls
+
+**Both GitHub workflows completed successfully. The EEG timing gate remains BLOCKED.** Workflow success confirms execution, not stimulus timing validity.
+
+### Exploratory 230 Hz BIP3 actuator check
+
+[Script](actuator_alignment.py) · [Run](https://github.com/mbassomatic311-hub/Emergence-Lab-Evolution-of-Internal-Models/actions/runs/37949428944)
+
+A disjoint training/validation search used 6 early delivered trials, 6 early catch trials for timing calibration and 6 late delivered, 6 late catch for evaluation. The calibration offset maximizing median 210–250 Hz energy difference was +1.750 seconds after provisional trial start plus stimon. On the held-out late group:
+
+- Median normalized AUDIO band energy: **1.169 delivered**, **0.916 catch** (ratio **1.275**).
+- Just **0/6** held-out delivered trials exceeded the specified physical pulse threshold.
+- In **4/6** delivered held-out trials, the candidate 100 ms pulse would precede the recorded outcome marker.
+- **Physical onset NOT verified.** No stimulus-locked EEG consciousness/detection model was fitted.
+
+A failure with this small selected-channel waveform check is not evidence that tactile pulses or neural correlates are absent. Calibration depends on uncertain interpretation of recorded AUDIO and public task timestamps. Original acquisition/task code is needed.
+
+### Behavioral modeling with adaptive-staircase alternative controls
+
+[Script](staircase_controls.py) · [Saved aggregate](staircase_control_aggregate.json) · [Successful workflow](https://github.com/mbassomatic311-hub/Emergence-Lab-Evolution-of-Internal-Models/actions/runs/37949913902)
+
+Same 18 subjects, 5,630 training and 3,032 later held-out public trials. A more complete stimulus-only model includes physical pulse presence, delivered and nominal amplitude, previous pulse presence/amplitude and short-window stimulus history. Subsequent variants add previous subjective detection/confidence reports and elapsed-trial position. All standardization fits training trials only.
+
+| Model | Detection log loss (lower better) | Confidence MSE (lower better) |
+|---|---:|---:|
+| Present physical pulse and amplitude | 0.623290 | 0.017303 |
+| Physical pulse and staircase history | 0.619480 | 0.018229 |
+| Staircase + previous reports/confidence | 0.607958 | 0.017024 |
+| Staircase + previous reports/confidence + time progress | 0.652753 | 0.016781 |
+
+Average held-out participant-paired contrasts, with **descriptive** (not confirmatory) participant-bootstrap 95% intervals:
+
+- Additional report history vs staircase-only: **−0.011522** detection log loss, interval **[−0.035656, +0.008283]**. The interval crosses zero.
+- Additional report history vs staircase-only: **−0.001205** confidence MSE, interval **[−0.001990, −0.000556]**.
+- Adding elapsed-trial progress to the report-history model led to worse detection vs staircase-only: **+0.033273** log loss, interval **[−0.030352, +0.112973]**, while confidence MSE improved by **−0.001448** [−0.002553, −0.000554].
+
+**Interpretation:** The initial detection advantage weakens after a more demanding stimulus-history baseline and is sensitive to the inclusion of time trend; confidence prediction retains a small exploratory advantage. None of this can identify a causal effect of remembered experience, a degree of consciousness, or a new neural signature. Adaptive staircase variables remain endogenous; model choices were post-hoc, fixed hyperparameters, not externally replicated.
+
+**Next gate:** recover original experiment task and trigger code, establish reliable physical-onset synchronization and staircase dynamics, then run genuinely pre-response EEG feature evaluation against locked negative controls. Do not proceed to dimensional compression claims before this.
