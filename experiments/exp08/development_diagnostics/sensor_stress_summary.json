@@ -1,0 +1,17 @@
+{
+  "status": "Exploratory development seeds only",
+  "means": {
+    "normal": {
+      "random": 0.1111111111111111,
+      "greedy": 0.6388888888888888,
+      "one_step": 3.0555555555555554,
+      "bayesian": 3.4166666666666665
+    },
+    "corrupted": {
+      "random": 0.19444444444444442,
+      "greedy": 0.22222222222222224,
+      "one_step": 0.611111111111111,
+      "bayesian": 0.611111111111111
+    }
+  }
+}
