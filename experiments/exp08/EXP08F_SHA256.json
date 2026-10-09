@@ -1,0 +1,10 @@
+{
+  "status": "EXPLORATORY DEVELOPMENT 08F. Independent seeded regeneration checksum, NOT external preregistration",
+  "files": {
+    "prediction_events.csv": "a5fb30604897b6f35612b422b1b1ab7c92b41c8c905a0fe2183aab820a99ce70",
+    "alarm_per_world.csv": "f7ba503e3298d4ce1947b8adf0ba05db0933e04345c762d8368eeda7b8c91dea",
+    "navigation_per_world.csv": "73ca6507b5df551a8d0923eb23013ba7c6fc919fe2c7175503a55dd89fca96a3",
+    "summary.json": "115a41ce44de81d31bc42bd4082dde68575315f2af4b63a56ffe79462c5fb55a",
+    "exploratory_intervals.json": "70ce86a779b51ea94b6a91c11f9c53500597b252d074a8bf9cdb5a03e4a4fc84"
+  }
+}

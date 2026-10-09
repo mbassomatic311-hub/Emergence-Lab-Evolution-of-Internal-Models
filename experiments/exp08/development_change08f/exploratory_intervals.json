@@ -1,0 +1,92 @@
+{
+  "analysis_status": "POST-HOC, exploratory only; no significance/novelty/consciousness claim",
+  "n_worlds": 144,
+  "alarm_diagnostic": {
+    "0": {
+      "worlds": 144,
+      "worlds_any_alarm": 3,
+      "alarms_pre_change_boundary": 1,
+      "alarms_after_change_boundary": 2,
+      "median_post_change_detection_delay": 9.5
+    },
+    "1": {
+      "worlds": 144,
+      "worlds_any_alarm": 83,
+      "alarms_pre_change_boundary": 1,
+      "alarms_after_change_boundary": 82,
+      "median_post_change_detection_delay": 3.0
+    }
+  },
+  "paired_shifted_navigation_differences": {
+    "surprise_reset_minus_slow": {
+      "mean": 0.2013888888888889,
+      "ci95": [
+        0.1111111111111111,
+        0.3055555555555556
+      ],
+      "positive": 17,
+      "negative": 0,
+      "ties": 127
+    },
+    "surprise_reset_minus_fast": {
+      "mean": 0.2013888888888889,
+      "ci95": [
+        0.05555555555555555,
+        0.3472222222222222
+      ],
+      "positive": 30,
+      "negative": 14,
+      "ties": 100
+    },
+    "surprise_reset_minus_adaptive_gain": {
+      "mean": 0.1388888888888889,
+      "ci95": [
+        0.027777777777777776,
+        0.2638888888888889
+      ],
+      "positive": 20,
+      "negative": 7,
+      "ties": 117
+    },
+    "surprise_reset_minus_memoryless": {
+      "mean": 0.7638888888888888,
+      "ci95": [
+        0.5833333333333334,
+        0.9513888888888888
+      ],
+      "positive": 69,
+      "negative": 7,
+      "ties": 68
+    },
+    "surprise_reset_minus_bayesian": {
+      "mean": -2.0416666666666665,
+      "ci95": [
+        -2.388888888888889,
+        -1.7013888888888888
+      ],
+      "positive": 12,
+      "negative": 101,
+      "ties": 31
+    },
+    "surprise_reset_minus_comparator": {
+      "mean": -1.7083333333333333,
+      "ci95": [
+        -2.0,
+        -1.4166666666666667
+      ],
+      "positive": 11,
+      "negative": 97,
+      "ties": 36
+    },
+    "surprise_reset_minus_greedy": {
+      "mean": 0.4097222222222222,
+      "ci95": [
+        0.1527777777777778,
+        0.6597222222222222
+      ],
+      "positive": 66,
+      "negative": 25,
+      "ties": 53
+    }
+  }
+}
