@@ -1,0 +1,62 @@
+{
+  "adaptive_minus_cycle": {
+    "contrast": "adaptive_minus_cycle",
+    "mean_accuracy_difference": 0.0,
+    "n_seeds": 96,
+    "percentile_seed_bootstrap_95ci": [
+      0.0,
+      0.0
+    ]
+  },
+  "adaptive_minus_random": {
+    "contrast": "adaptive_minus_random",
+    "mean_accuracy_difference": 0.0,
+    "n_seeds": 96,
+    "percentile_seed_bootstrap_95ci": [
+      0.0,
+      0.0
+    ]
+  },
+  "by_policy": {
+    "adaptive": {
+      "changed_counterfactual_mse": 0.0032211842262119083,
+      "changed_coverage": 1.0,
+      "changed_exact_attribution": 1.0,
+      "false_alarm_rate": 0.0,
+      "mean_probe_cost": 17.97172619047619,
+      "n_worlds": 672,
+      "unknown_abstain_rate": 1.0
+    },
+    "cycle": {
+      "changed_counterfactual_mse": 0.003945511321163,
+      "changed_coverage": 1.0,
+      "changed_exact_attribution": 1.0,
+      "false_alarm_rate": 0.0,
+      "mean_probe_cost": 30.0,
+      "n_worlds": 672,
+      "unknown_abstain_rate": 1.0
+    },
+    "random": {
+      "changed_counterfactual_mse": 0.004117479852185242,
+      "changed_coverage": 1.0,
+      "changed_exact_attribution": 1.0,
+      "false_alarm_rate": 0.0,
+      "mean_probe_cost": 30.458333333333332,
+      "n_worlds": 672,
+      "unknown_abstain_rate": 0.9375
+    },
+    "repeat": {
+      "changed_counterfactual_mse": 0.9410142692777232,
+      "changed_coverage": 0.0,
+      "changed_exact_attribution": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_probe_cost": 0.0,
+      "n_worlds": 672,
+      "unknown_abstain_rate": 0.0
+    }
+  },
+  "n_cases": 2688,
+  "noise": 0.13,
+  "seeds": 96,
+  "status": "exploratory development only; no preregistration or consciousness measure"
+}
