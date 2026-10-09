@@ -1,0 +1,93 @@
+name: Import Experiment 08J active probing study
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["EXP08J_GITHUB_TRANSFER.txt"]
+permissions:
+  contents: write
+jobs:
+  audit08j:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Integrity-check compressed package, manifest and extraction paths
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,hashlib,io,lzma,tarfile
+          from pathlib import Path, PurePosixPath
+          payload=Path("EXP08J_GITHUB_TRANSFER.txt")
+          compressed=base64.b64decode(payload.read_text().strip(),validate=True)
+          digest="f630b45ac4cd5348dcae7e51f9b8b470e013ac38c45f4d654cb661047e539c89"
+          if hashlib.sha256(compressed).hexdigest()!=digest:
+              raise SystemExit("08J compressed payload digest mismatch")
+          raw=lzma.decompress(compressed,memlimit=256_000_000)
+          if len(raw)>8_000_000:raise SystemExit("Decompressed audit exceeds size limit")
+          with tarfile.open(fileobj=io.BytesIO(raw),mode="r:") as tar:
+              members=tar.getmembers()
+              paths=[m.name for m in members]
+              if len(paths)!=12 or len(set(paths))!=12:raise SystemExit("Wrong file count")
+              content={}
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if (not m.isfile() or m.size>2_000_000 or p.is_absolute() or ".." in p.parts
+                      or p.parts[:3]!=("experiments","exp08","audit08j") or Path(m.name).exists()):
+                      raise SystemExit("Invalid/overwriting path: "+m.name)
+                  content[m.name]=tar.extractfile(m).read()
+              manifest_path="experiments/exp08/audit08j/SHA256SUMS.txt"
+              if manifest_path not in content:raise SystemExit("Manifest missing")
+              manifest={}
+              for line in content[manifest_path].decode().splitlines():
+                  sha,path=line.split("  ",1)
+                  if len(sha)!=64 or path in manifest:raise SystemExit("Malformed manifest")
+                  manifest[path]=sha
+              if set(manifest)!=set(content)-{manifest_path}:
+                  raise SystemExit("Manifest membership mismatch")
+              for path,expected in manifest.items():
+                  if hashlib.sha256(content[path]).hexdigest()!=expected:
+                      raise SystemExit("Source/result checksum mismatch: "+path)
+              for path,b in content.items():
+                  dest=Path(path);dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(b)
+          print("Verified 12 files: source, 12 tests, pilot, 2 developmental datasets and manifest")
+          PY
+      - name: Install pinned NumPy
+        run: python -m pip install numpy==2.3.5
+      - name: Test simulator and new action-selection controls
+        working-directory: experiments/exp08/audit08j
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: python -m unittest -v test_experiment08j.py
+      - name: Re-run exact low-noise 24-seed development comparison
+        working-directory: experiments/exp08/audit08j
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          python experiment08j.py --seeds 24 --noise .025 --out /tmp/exp08j-low
+          python check_reproduction.py --reference development_main --candidate /tmp/exp08j-low
+      - name: Re-run exact high-noise 24-seed developmental comparison
+        working-directory: experiments/exp08/audit08j
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          python experiment08j.py --seeds 24 --noise .13 --out /tmp/exp08j-high
+          python check_reproduction.py --reference development_high_noise --candidate /tmp/exp08j-high
+      - name: Re-run original six-seed pilot
+        working-directory: experiments/exp08/audit08j
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          python experiment08j.py --seeds 6 --noise .025 --out /tmp/exp08j-pilot
+          python check_reproduction.py --reference pilot --candidate /tmp/exp08j-pilot
+      - name: Commit only validated development work to open draft branch
+        shell: bash
+        run: |
+          rm -f EXP08J_GITHUB_TRANSFER.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Archive reproducible Experiment 08J active probing and negative controls"
+          git push origin HEAD:research/exp08-development-2d
