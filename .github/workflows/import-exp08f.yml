@@ -1,0 +1,87 @@
+name: Import Experiment 08F development audit
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["EXP08F_IMPORT_PAYLOAD.txt", ".github/workflows/import-exp08f.yml"]
+
+permissions:
+  contents: write
+jobs:
+  research-development:
+    if: github.ref == 'refs/heads/research/exp08-development-2d'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify checksum and import source without overwriting
+        shell: bash
+        run: |
+          python - <<'PYCODE'
+          import base64,hashlib,io,lzma,tarfile
+          from pathlib import Path,PurePosixPath
+          payload=Path('EXP08F_IMPORT_PAYLOAD.txt')
+          if not payload.is_file():raise SystemExit('Research payload absent')
+          x=base64.b64decode(payload.read_text().strip(),validate=True)
+          expected='ea491140ff6096b1356e134650c8bba8ac93be803af706d195906757ad4c285d'
+          if hashlib.sha256(x).hexdigest()!=expected:raise SystemExit('SHA256 mismatch')
+          raw=lzma.decompress(x,memlimit=256_000_000)
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as z:
+              ms=z.getmembers()
+              expected_files={
+                  'experiments/exp08/audit08f_change.py',
+                  'experiments/exp08/audit08f_analyze.py',
+                  'experiments/exp08/audit08f_plot.py',
+                  'experiments/exp08/test_audit08f_change.py',
+                  'experiments/exp08/DEVELOPMENT_AUDIT_08F.md',
+                  'experiments/exp08/EXP08F_SHA256.json'
+              }
+              if {m.name for m in ms}!=expected_files or len(ms)!=6:raise SystemExit('Unexpected files')
+              for m in ms:
+                  p=PurePosixPath(m.name)
+                  if (not m.isfile() or m.size>100000 or p.is_absolute() or '..' in p.parts or
+                      p.parts[:2]!=('experiments','exp08') or Path(m.name).exists()):
+                      raise SystemExit('Invalid entry or overwrite: '+m.name)
+              for m in ms:
+                  p=Path(m.name);p.parent.mkdir(parents=True,exist_ok=True)
+                  p.write_bytes(z.extractfile(m).read())
+          print('All six research source/manifest files verified and extracted')
+          PYCODE
+      - name: Install reproducibility dependencies
+        run: |
+          python -m pip install 'numpy==2.3.5' 'matplotlib>=3.8,<4'
+      - name: Run 08F and preceding Experiment 08 unit tests
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python -m unittest -q test_exp08.py test_audit_fitness_noise.py test_audit_world_controls.py test_audit08c_learning.py test_audit08d_learning.py test_audit08e_selfsupervised.py test_audit08f_change.py
+      - name: Independently regenerate all 144 developmental worlds and verify byte-level outputs
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python audit08f_change.py --per-group 24 --out development_change08f > /tmp/exp08f-run.log
+          python audit08f_analyze.py --data-dir development_change08f > /tmp/exp08f-analysis.log
+          python audit08f_plot.py
+          python - <<'PYCODE'
+          from pathlib import Path
+          from hashlib import sha256
+          import json
+          root=Path('development_change08f')
+          expected=json.loads(Path('EXP08F_SHA256.json').read_text())['files']
+          for name,digest in expected.items():
+              actual=sha256((root/name).read_bytes()).hexdigest()
+              if actual!=digest:raise SystemExit(f'Reproducibility mismatch: {name} {actual}')
+              print('Reproduced',name)
+          print('All five datasets and summaries reproduced byte for byte.')
+          PYCODE
+      - name: Commit development-only data and remove transfer artifact
+        run: |
+          rm -f EXP08F_IMPORT_PAYLOAD.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Record Experiment 08F surprise-driven forgetting audit and raw seeded results'
+          git push origin HEAD:research/exp08-development-2d
