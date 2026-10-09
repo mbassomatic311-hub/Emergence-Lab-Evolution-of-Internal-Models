@@ -49,3 +49,11 @@ python audit_events.py --output event_audit_aggregate.json
 ```
 
 The audit writes **only aggregate statistics**, not trial-level confidential data. No EEG or individual ratings are saved.
+
+## First independently reproduced aggregate quality checks
+
+The GitHub workflow has verified the pinned public event-data audit: **18** subject records, **8,690** task starts, **8,662** uniquely paired first-order outcomes, **8,689** confidence entries, and **8,662** trials with both outcome and valid confidence. There are **28** ambiguous or missing outcome labels and **one** missing confidence rating. The source also contains **61** nonstandard threshold-event markers. In the conservative prospective **0.5-second** stimulus-relative EEG-window feasibility check, only **7,211** trials pass, with **1,479** excluded from that hypothetical window (including invalid labels or windows too near a response marker).
+
+**Important:** `7,211` is **not** the number of verified extractable EEG epochs. It is a metadata-only screening statistic based on a *provisional* stimulus timing formula. The real physical onset must be confirmed using the recorded vibrotactile actuator channel, and the report timing interpretation must be checked against original task code. The data source contains trial outcome markers separate from confidence markers, and the meaning/timing of non-task `stim-thr` markers must be clarified. No hypothesis about neural prediction or graded consciousness has been tested.
+
+[Public aggregate audit](event_audit_aggregate.json) — contains no participant-level predictions or raw EEG.
