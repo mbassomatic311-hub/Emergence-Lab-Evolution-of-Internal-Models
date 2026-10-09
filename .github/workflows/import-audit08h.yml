@@ -1,0 +1,80 @@
+name: Import and reproduce Experiment 08H development audit
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["EXP08H_GITHUB_TRANSFER.txt"]
+permissions:
+  contents: write
+jobs:
+  audit-08h:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify compressed archive, manifest, and safe extraction
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,hashlib,io,lzma,tarfile
+          from pathlib import Path, PurePosixPath
+          transfer=Path("EXP08H_GITHUB_TRANSFER.txt")
+          compressed=base64.b64decode(transfer.read_text().strip(),validate=True)
+          expected="6612cf19a792a9d2d174749039f9baf7eeae4f52f24e9e2f08a47b17718b46b1"
+          if hashlib.sha256(compressed).hexdigest()!=expected:
+              raise SystemExit("Experiment 08H compressed archive SHA-256 mismatch")
+          raw=lzma.decompress(compressed,memlimit=256_000_000)
+          if len(raw)>7_000_000:raise SystemExit("Decompressed archive too large")
+          with tarfile.open(fileobj=io.BytesIO(raw),mode="r:") as tar:
+              members=tar.getmembers()
+              if len(members)!=13 or len({m.name for m in members})!=13:
+                  raise SystemExit("Unexpected member count or duplicate names")
+              prefix=("experiments","exp08","audit08h")
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if (not m.isfile() or m.size>2_000_000 or p.is_absolute()
+                      or ".." in p.parts or p.parts[:3]!=prefix
+                      or Path(m.name).exists()):
+                      raise SystemExit("Unsafe entry or overwrite refused: "+m.name)
+              contents={m.name:tar.extractfile(m).read() for m in members}
+              manifest_path="experiments/exp08/audit08h/SHA256SUMS.txt"
+              if manifest_path not in contents:raise SystemExit("Missing checksum manifest")
+              manifest={}
+              for line in contents[manifest_path].decode().splitlines():
+                  digest,path=line.split("  ",1)
+                  if path in manifest or len(digest)!=64:raise SystemExit("Invalid manifest")
+                  manifest[path]=digest
+              if set(manifest)!=set(contents)-{manifest_path}:
+                  raise SystemExit("Manifest does not cover all files")
+              for path,digest in manifest.items():
+                  if hashlib.sha256(contents[path]).hexdigest()!=digest:
+                      raise SystemExit("Source/output checksum mismatch: "+path)
+              for path,data in contents.items():
+                  dest=Path(path);dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(data)
+          print("Verified all 13 08H artifacts and manifest")
+          PY
+      - name: Install pinned scientific dependency
+        run: python -m pip install numpy==2.3.5
+      - name: Run 13 software and identifiability tests
+        working-directory: experiments/exp08/audit08h
+        run: OPENBLAS_NUM_THREADS=1 python -m unittest -v test_exp08h.py
+      - name: Independently reproduce main and stress results
+        shell: bash
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        working-directory: experiments/exp08/audit08h
+        run: |
+          python exp08h.py --seeds 96 --out /tmp/exp08h-main
+          python stress.py --seeds 48 --out /tmp/exp08h-stress
+          python check_reproduction.py development /tmp/exp08h-main development_stress /tmp/exp08h-stress
+      - name: Commit verified exploratory artifacts
+        shell: bash
+        run: |
+          rm -f EXP08H_GITHUB_TRANSFER.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add reproducible 08H uncued-cause and active-probing development research"
+          git push origin HEAD:research/exp08-development-2d
