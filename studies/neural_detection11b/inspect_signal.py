@@ -91,13 +91,15 @@ def inspect():
             if not np.isfinite(z).all():continue
             before=z[:,:round(.20*rate)]
             after=z[:,round(.27*rate):round(.44*rate)]
-            b=np.sqrt(np.mean(before**2,axis=1))+1e-12
-            a=np.sqrt(np.mean(after**2,axis=1))+1e-12
+            # Remove substantial DC offsets and evaluate variance of actual signal.
+            pre_mean=np.mean(before,axis=1,keepdims=True)
+            b=np.sqrt(np.mean((before-pre_mean)**2,axis=1))+1e-12
+            a=np.sqrt(np.mean((after-pre_mean)**2,axis=1))+1e-12
             rms_ratios.append(float(np.max((a/b)[idx])))
             spectra.append(float(np.max(power_ratio(after[idx],rate))))
-            # Primary timing feature: average absolute amplitude of audio in 25ms blocks
-            signal=z[idx[0],:]
-            base=np.median(np.abs(signal[:round(.20*rate)]))+1e-12
+            # Normalize temporal waveform by pre-stimulus fluctuation, NOT raw DC.
+            signal=z[idx[0],:]-pre_mean[idx[0],0]
+            base=np.sqrt(np.mean(signal[:round(.20*rate)]**2))+1e-12
             chunk=round(.025*rate)
             wins=np.array([np.mean(np.abs(signal[j:j+chunk]))/base
                 for j in range(0,len(signal)-chunk,chunk)])
