@@ -11,6 +11,7 @@ from scipy.io import loadmat
 
 ROOT="https://s3.amazonaws.com/openneuro.org/ds001785/sub-01/ses-01/eeg/sub-01_ses-01_task-adapt_run-01_eeg"
 EVENTS="https://raw.githubusercontent.com/OpenNeuroDatasets/ds001785/53be0167e7068aba693d57923eb4c9c037878159/sub-01/ses-01/eeg/sub-01_ses-01_task-adapt_run-01_events.tsv"
+CHANNELS="https://raw.githubusercontent.com/OpenNeuroDatasets/ds001785/53be0167e7068aba693d57923eb4c9c037878159/sub-01/ses-01/eeg/sub-01_ses-01_channels.tsv"
 
 def get_small(url,limit):
     r=urllib.request.Request(url,headers={"User-Agent":"EmergenceLab-St11B-Research/1"})
@@ -61,36 +62,54 @@ def inspect():
     if n<50 or n>90 or rate not in (512,1024) or len(labels)!=n:raise RuntimeError("Unexpected signal shape")
     if not isinstance(eeg.data,str):raise RuntimeError("Signal stored in .set; fdt assumptions not valid")
     if n*pnts*4>1600000000:raise RuntimeError("Unexpected signal size")
-    starts=[]
     import csv
-    for item in csv.DictReader(io.StringIO(get_small(EVENTS,200000).decode()),delimiter="\t"):
-        if item["trial_type"]=="stim-adapt":
-            try:a,d=float(item["onset"]),float(item["stimon"])
-            except ValueError:continue
-            if math.isfinite(a) and math.isfinite(d) and a>15 and .3<d<1.0:
-                starts.append(a+d)
-            if len(starts)>=12:break
-    if len(starts)<8:raise RuntimeError("Not enough candidate events")
-    idx=[i for i,x in enumerate(labels) if any(k in x.lower() for k in ("audio","stim","aux","trig"))]
-    print("CANDIDATE ACTUATOR CHANNELS:",idx)
-    if not idx:
-        print("STOP: no identifiable actuator channel: physical onset not verified")
-        return
-    ratios=[];spectra=[]
-    for t in starts:
-        z=get_window(t-.25,.65,rate,n)
-        if not np.isfinite(z).all():continue
-        before=z[:,:round(.20*rate)]
-        after=z[:,round(.27*rate):round(.44*rate)]
-        b=np.sqrt(np.mean(before**2,axis=1))+1e-12
-        a=np.sqrt(np.mean(after**2,axis=1))+1e-12
-        ratios.append(float(np.max((a/b)[idx])))
-        spectra.append(float(np.max(power_ratio(after[idx],rate))))
-    print("NONIDENTIFYING SIGNAL QUALITY METRICS:",
-          json.dumps({"segments_read":len(ratios),
-                      "aux_median_rms_post_pre":float(np.median(ratios)),
-                      "aux_median_230hz_relative_power":float(np.median(spectra)),
-                      "physical_onset_verified":False,
-                      "status":"Signal access and byte-order audit only; no EEG predictive model"}))
+    channel_rows=list(csv.DictReader(io.StringIO(get_small(CHANNELS,16000).decode()),delimiter="\t"))
+    if [q["name"] for q in channel_rows]!=labels:
+        raise RuntimeError("EEGLAB and BIDS EEG channel order mismatch")
+    idx=[i for i,q in enumerate(channel_rows) if q["type"]=="AUDIO"]
+    print("AUDIO CHANNEL INDEX FROM PUBLISHED BIDS TYPES:",idx)
+    if len(idx)!=1:raise RuntimeError("Exactly one independent audio channel must be verified")
+    event_rows=list(csv.DictReader(io.StringIO(get_small(EVENTS,200000).decode()),delimiter="\t"))
+    trials=[]
+    starts=[i for i,r in enumerate(event_rows) if r["trial_type"]=="stim-adapt"]
+    for k,i in enumerate(starts):
+        end=starts[k+1] if k+1<len(starts) else len(event_rows)
+        block=event_rows[i:end]
+        outcome=[q["trial_type"] for q in block if q["trial_type"] in ("hit","miss","cr","fa")]
+        if len(outcome)!=1:continue
+        try: a,d=float(event_rows[i]["onset"]),float(event_rows[i]["stimon"])
+        except ValueError: continue
+        if math.isfinite(a) and math.isfinite(d) and a>15 and .3<d<1.0:
+            trials.append((a+d,"delivered" if outcome[0] in ("hit","miss") else "catch"))
+    grouped={}
+    for group in ("delivered","catch"):
+        sample=[t for t,g in trials if g==group][:12]
+        if len(sample)<10:raise RuntimeError(f"Need 10+ trial timing windows of type {group}")
+        rms_ratios=[];spectra=[];window_summaries=[]
+        for t in sample:
+            z=get_window(t-.25,.65,rate,n)
+            if not np.isfinite(z).all():continue
+            before=z[:,:round(.20*rate)]
+            after=z[:,round(.27*rate):round(.44*rate)]
+            b=np.sqrt(np.mean(before**2,axis=1))+1e-12
+            a=np.sqrt(np.mean(after**2,axis=1))+1e-12
+            rms_ratios.append(float(np.max((a/b)[idx])))
+            spectra.append(float(np.max(power_ratio(after[idx],rate))))
+            # Primary timing feature: average absolute amplitude of audio in 25ms blocks
+            signal=z[idx[0],:]
+            base=np.median(np.abs(signal[:round(.20*rate)]))+1e-12
+            chunk=round(.025*rate)
+            wins=np.array([np.mean(np.abs(signal[j:j+chunk]))/base
+                for j in range(0,len(signal)-chunk,chunk)])
+            window_summaries.append(wins)
+        grouped[group]={"segments":len(rms_ratios),
+                "median_rms_post_pre":float(np.median(rms_ratios)),
+                "median_230hz_relative_power":float(np.median(spectra)),
+                "coarse_median_normalized_abs_waveform":[round(float(q),3)
+                    for q in np.median(np.stack(window_summaries),axis=0)]}
+    result={"n_signal_channels":n,"audio_channel_labels":[labels[i] for i in idx],
+            "metadata_stimulus_groups":grouped,"physical_onset_verified":False,
+            "status":"Independent BIDS AUDIO channel cross-check; pulse timestamp still requires offset calibration"}
+    print("NONIDENTIFYING AUDIO-CHANNEL QC:",json.dumps(result,indent=2))
 
 if __name__=="__main__":inspect()
