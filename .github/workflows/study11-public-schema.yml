@@ -4,7 +4,6 @@ on:
     branches: ["research/study11-human-eeg-preflight"]
     paths:
       - studies/neural_vividness11/inspect_openneuro.py
-      - .github/workflows/study11-public-schema.yml
 permissions:
   contents: write
 jobs:
@@ -32,7 +31,7 @@ jobs:
           from pathlib import Path
           p=Path("schema_check.json")
           obj=json.loads(p.read_text())
-          assert set(obj)=={"dataset","status","source_file","source_bytes","rows","columns","dtypes","ratings_stored","eeg_fetched","events_matched","preflight_only"}
+          assert set(obj)=={"dataset","status","source_file","source_bytes","source_encoding","rows","columns","dtypes","ratings_stored","eeg_fetched","events_matched","preflight_only"}
           assert obj["ratings_stored"] is False and obj["eeg_fetched"] is False
           assert obj["events_matched"] is False and obj["preflight_only"] is True
           print("Schema only, no personally linked trials or scores.")
