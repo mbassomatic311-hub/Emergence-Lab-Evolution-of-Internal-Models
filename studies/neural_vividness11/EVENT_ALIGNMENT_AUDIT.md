@@ -17,3 +17,13 @@ Before running `evaluate.py`, obtain an authoritative participant-level key iden
 Do not generate the evaluator's required `events_to_stimuli_alignment_verified: true` or `rating_to_stimuli_alignment_verified: true` without this evidence. The 47-participant event audit **cannot** establish it.
 
 This research is about predicting reports of imagery vividness, **not a direct measure of conscious experience**, and remains unregistered development work.
+
+## Source-pinned 47-participant audit — completed 9 October 2026
+
+The [public 47-participant metadata audit](https://github.com/mbassomatic311-hub/Emergence-Lab-Evolution-of-Internal-Models/actions/runs/37940166784) successfully ran and is archived as `event_structure/summary.json` and `event_structure/per_subject_event_counts.csv`. All **47/47** event streams contain **212** poem-onset codes (65282), versus **210** rated texts. Sequence and five-second event timing checks reported no detected errors. An extra leading rating-screen marker (65284) was present in **29/47** recordings and absent in **18/47**; the first eight recordings were not representative of that latter variation.
+
+A separate [candidate seven-block pause audit](https://github.com/mbassomatic311-hub/Emergence-Lab-Evolution-of-Internal-Models/actions/runs/37940643778) found longer gaps at positions compatible with two introductory presentations followed by seven sets of 30 texts (median candidate boundary gap **58.193 seconds**, median internal gap **25.597 seconds**). Its own summary explicitly reports `join_verified: false`: no code or source reliably identifies those first two trials as practice, excludes them, or maps the following EEG epochs to `PoemName`.
+
+The [authors' published methods](https://doi.org/10.1038/s41597-025-06189-w) state that both the block order and within-block stimulus order were randomized **per participant**. Therefore generic block assignment spreadsheets and EEG timestamps cannot by themselves establish a per-subject poem-to-EEG join. The source has no event-level poem identity in `events.tsv`, and the behavioral file has no event timestamp/index. **Human EEG–vividness analysis remains STOPPED** pending authoritative presentation logs or author clarification and independent validation.
+
+The paper lists Joydeep Bhattacharya (jbhattacharya@hkbu.edu.hk) as corresponding author. An inquiry has been drafted, **not sent**; author review is not yet underway.
