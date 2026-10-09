@@ -67,10 +67,41 @@ jobs:
         run: |
           python audit08g_causal_attribution.py --worlds 192 --out /tmp/reproduction08g
           python audit08g_stress.py --worlds 192 --out /tmp/reproduction08g
-          for f in per_world.csv summary.json noise_sweep.csv outside_model.csv stress_summary.json; do
-            cmp "development_causal08g/$f" "/tmp/reproduction08g/$f" || exit 1
-          done
-          echo "All five original research datasets reproduced byte-for-byte."
+          python - <<'PY'
+          import csv, json, math
+          from pathlib import Path
+          def equivalent(a,b,path='root'):
+              if isinstance(a,dict) and isinstance(b,dict):
+                  assert a.keys()==b.keys(), path+' keys'
+                  for k in a:equivalent(a[k],b[k],path+'/'+k)
+              elif isinstance(a,list) and isinstance(b,list):
+                  assert len(a)==len(b),path+' length'
+                  for i,(x,y) in enumerate(zip(a,b)):equivalent(x,y,path+'/'+str(i))
+              elif isinstance(a,bool) or isinstance(b,bool):
+                  assert a is b,path
+              elif isinstance(a,(int,float)) and isinstance(b,(int,float)):
+                  assert math.isclose(a,b,rel_tol=0,abs_tol=1e-10),(path,a,b)
+              elif isinstance(a,str) and isinstance(b,str):
+                  if a==b:return
+                  try:
+                      assert math.isclose(float(a),float(b),rel_tol=0,abs_tol=1e-10),(path,a,b)
+                  except ValueError:
+                      raise AssertionError((path,a,b))
+              else:
+                  assert a==b,(path,a,b)
+          files=['per_world.csv','summary.json','noise_sweep.csv','outside_model.csv','stress_summary.json']
+          for name in files:
+              original=Path('development_causal08g')/name
+              repeat=Path('/tmp/reproduction08g')/name
+              if name.endswith('.json'):
+                  equivalent(json.loads(original.read_text()),json.loads(repeat.read_text()),name)
+              else:
+                  with original.open(newline='') as fa,repeat.open(newline='') as fb:
+                      ra=csv.DictReader(fa);rb=csv.DictReader(fb)
+                      assert ra.fieldnames==rb.fieldnames,name+' header'
+                      equivalent(list(ra),list(rb),name)
+              print('Cross-platform numerically reproduced:',name)
+          PY
       - name: Commit checked source and data to existing draft branch
         shell: bash
         run: |
