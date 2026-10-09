@@ -1,0 +1,113 @@
+name: Import and validate Experiment 08G causal attribution
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["EXP08G_RESEARCH_PAYLOAD.txt", ".github/workflows/import-exp08g.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  import-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify checksum and extract exactly eleven new research files
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, hashlib, io, lzma, tarfile
+          from pathlib import Path, PurePosixPath
+          p=Path('EXP08G_RESEARCH_PAYLOAD.txt')
+          blob=base64.b64decode(p.read_text().strip(),validate=True)
+          expected='972de088119b9ecd73e535a9d69cba23ac77e9337cc5f897dee192c2cf0a0fef'
+          assert hashlib.sha256(blob).hexdigest()==expected, 'Source package SHA256 mismatch'
+          raw=lzma.decompress(blob,memlimit=256_000_000)
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as archive:
+              items=archive.getmembers()
+              names=[m.name for m in items]
+              needed={
+                'experiments/exp08/audit08g_causal_attribution.py',
+                'experiments/exp08/audit08g_stress.py',
+                'experiments/exp08/test_audit08g_causal_attribution.py',
+                'experiments/exp08/test_audit08g_stress.py',
+                'experiments/exp08/DEVELOPMENT_AUDIT_08G.md',
+                'experiments/exp08/EXPERIMENT_08H_DRAFT.md',
+                'experiments/exp08/development_causal08g/per_world.csv',
+                'experiments/exp08/development_causal08g/summary.json',
+                'experiments/exp08/development_causal08g/noise_sweep.csv',
+                'experiments/exp08/development_causal08g/outside_model.csv',
+                'experiments/exp08/development_causal08g/stress_summary.json',
+              }
+              assert len(items)==11 and set(names)==needed, 'Unexpected archive inventory'
+              for m in items:
+                  q=PurePosixPath(m.name)
+                  assert (m.isfile() and m.size<600_000
+                    and not q.is_absolute() and '..' not in q.parts
+                    and q.parts[:2]==('experiments','exp08')
+                    and not Path(m.name).exists()),f'Unsafe / existing entry {m.name}'
+              for m in items:
+                  path=Path(m.name);path.parent.mkdir(parents=True,exist_ok=True)
+                  path.write_bytes(archive.extractfile(m).read())
+          print('Source archive checksum and exact file inventory verified')
+          PY
+      - name: Install dependencies
+        run: python -m pip install 'numpy==2.3.5'
+      - name: Experiment 08G invariant and identifiability checks
+        working-directory: experiments/exp08
+        run: python -m unittest -v test_audit08g_causal_attribution.py test_audit08g_stress.py
+      - name: Recompute 192-seed cause audit and sensitivity outputs
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        shell: bash
+        run: |
+          python audit08g_causal_attribution.py --worlds 192 --out /tmp/reproduction08g
+          python audit08g_stress.py --worlds 192 --out /tmp/reproduction08g
+          python - <<'PY'
+          import csv, json, math
+          from pathlib import Path
+          def equivalent(a,b,path='root'):
+              if isinstance(a,dict) and isinstance(b,dict):
+                  assert a.keys()==b.keys(), path+' keys'
+                  for k in a:equivalent(a[k],b[k],path+'/'+k)
+              elif isinstance(a,list) and isinstance(b,list):
+                  assert len(a)==len(b),path+' length'
+                  for i,(x,y) in enumerate(zip(a,b)):equivalent(x,y,path+'/'+str(i))
+              elif isinstance(a,bool) or isinstance(b,bool):
+                  assert a is b,path
+              elif isinstance(a,(int,float)) and isinstance(b,(int,float)):
+                  assert math.isclose(a,b,rel_tol=0,abs_tol=1e-10),(path,a,b)
+              elif isinstance(a,str) and isinstance(b,str):
+                  if a==b:return
+                  try:
+                      assert math.isclose(float(a),float(b),rel_tol=0,abs_tol=1e-10),(path,a,b)
+                  except ValueError:
+                      raise AssertionError((path,a,b))
+              else:
+                  assert a==b,(path,a,b)
+          files=['per_world.csv','summary.json','noise_sweep.csv','outside_model.csv','stress_summary.json']
+          for name in files:
+              original=Path('development_causal08g')/name
+              repeat=Path('/tmp/reproduction08g')/name
+              if name.endswith('.json'):
+                  equivalent(json.loads(original.read_text()),json.loads(repeat.read_text()),name)
+              else:
+                  with original.open(newline='') as fa,repeat.open(newline='') as fb:
+                      ra=csv.DictReader(fa);rb=csv.DictReader(fb)
+                      assert ra.fieldnames==rb.fieldnames,name+' header'
+                      equivalent(list(ra),list(rb),name)
+              print('Cross-platform numerically reproduced:',name)
+          PY
+      - name: Commit checked source and data to existing draft branch
+        shell: bash
+        run: |
+          rm -f EXP08G_RESEARCH_PAYLOAD.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Record Experiment 08G causal attribution and identifiability audit"
+          git push origin HEAD:research/exp08-development-2d

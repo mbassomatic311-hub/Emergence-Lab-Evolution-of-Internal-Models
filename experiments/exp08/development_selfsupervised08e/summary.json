@@ -1,0 +1,135 @@
+{
+  "status": "EXP08E EXPLORATORY DEVELOPMENT, not pre-registered, no consciousness outcome",
+  "nature": "hand-designed label-free online action-specific forward model",
+  "seeds_per_group": 24,
+  "nav_per_group": 24,
+  "n_seed_groups": 6,
+  "probe": {
+    "action_model": {
+      "pre": {
+        "n_worlds": 144,
+        "mean_mse": 0.6741237081670741
+      },
+      "post": {
+        "n_worlds": 144,
+        "mean_mse": 1.3987617692490153
+      }
+    },
+    "shuffled_action": {
+      "pre": {
+        "n_worlds": 144,
+        "mean_mse": 1.4656091831804237
+      },
+      "post": {
+        "n_worlds": 144,
+        "mean_mse": 1.5856812429588463
+      }
+    },
+    "action_blind": {
+      "pre": {
+        "n_worlds": 144,
+        "mean_mse": 1.6439934857772351
+      },
+      "post": {
+        "n_worlds": 144,
+        "mean_mse": 1.6995503495131399
+      }
+    },
+    "reset_memory": {
+      "pre": {
+        "n_worlds": 144,
+        "mean_mse": 1.040914269095734
+      },
+      "post": {
+        "n_worlds": 144,
+        "mean_mse": 1.0639868220117958
+      }
+    }
+  },
+  "navigation": {
+    "action_model": {
+      "stable": {
+        "n_episodes": 144,
+        "mean_food": 2.138888888888889,
+        "fraction_no_food": 0.2777777777777778
+      },
+      "shift+dropout": {
+        "n_episodes": 144,
+        "mean_food": 0.7916666666666666,
+        "fraction_no_food": 0.4305555555555556
+      }
+    },
+    "shuffled_action": {
+      "stable": {
+        "n_episodes": 144,
+        "mean_food": 0.08333333333333333,
+        "fraction_no_food": 0.9166666666666666
+      },
+      "shift+dropout": {
+        "n_episodes": 144,
+        "mean_food": 0.05555555555555555,
+        "fraction_no_food": 0.9444444444444444
+      }
+    },
+    "action_blind": {
+      "stable": {
+        "n_episodes": 144,
+        "mean_food": 0.14583333333333334,
+        "fraction_no_food": 0.8819444444444444
+      },
+      "shift+dropout": {
+        "n_episodes": 144,
+        "mean_food": 0.16666666666666666,
+        "fraction_no_food": 0.8472222222222222
+      }
+    },
+    "reset_memory": {
+      "stable": {
+        "n_episodes": 144,
+        "mean_food": 0.14583333333333334,
+        "fraction_no_food": 0.8819444444444444
+      },
+      "shift+dropout": {
+        "n_episodes": 144,
+        "mean_food": 0.16666666666666666,
+        "fraction_no_food": 0.8472222222222222
+      }
+    },
+    "greedy": {
+      "stable": {
+        "n_episodes": 144,
+        "mean_food": 0.8333333333333334,
+        "fraction_no_food": 0.8263888888888888
+      },
+      "shift+dropout": {
+        "n_episodes": 144,
+        "mean_food": 0.4166666666666667,
+        "fraction_no_food": 0.8194444444444444
+      }
+    },
+    "comparator": {
+      "stable": {
+        "n_episodes": 144,
+        "mean_food": 3.763888888888889,
+        "fraction_no_food": 0.125
+      },
+      "shift+dropout": {
+        "n_episodes": 144,
+        "mean_food": 2.6527777777777777,
+        "fraction_no_food": 0.1736111111111111
+      }
+    },
+    "bayesian": {
+      "stable": {
+        "n_episodes": 144,
+        "mean_food": 3.513888888888889,
+        "fraction_no_food": 0.1388888888888889
+      },
+      "shift+dropout": {
+        "n_episodes": 144,
+        "mean_food": 2.9583333333333335,
+        "fraction_no_food": 0.14583333333333334
+      }
+    }
+  }
+}

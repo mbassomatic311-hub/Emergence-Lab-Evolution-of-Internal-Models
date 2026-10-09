@@ -1,0 +1,246 @@
+{
+  "conditions": {
+    "0.13/one_sensor/adaptive/calibrated": {
+      "avg_probe_cost": 18.038690476190474,
+      "coverage": 0.2,
+      "exact_cause_accuracy": 0.2,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.01367795372369361,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.13/one_sensor/adaptive/fixed": {
+      "avg_probe_cost": 18.12797619047619,
+      "coverage": 0.2,
+      "exact_cause_accuracy": 0.2,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.0034438146338544072,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.13/one_sensor/cycle/calibrated": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.2,
+      "exact_cause_accuracy": 0.2,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.003906754022639135,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.13/one_sensor/cycle/fixed": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.2,
+      "exact_cause_accuracy": 0.2,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.003887556823263361,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.13/two_sensors/adaptive/calibrated": {
+      "avg_probe_cost": 18.095238095238095,
+      "coverage": 1.0,
+      "exact_cause_accuracy": 1.0,
+      "external_sensor_correct": 1.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.0034549964300299553,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.13/two_sensors/adaptive/fixed": {
+      "avg_probe_cost": 18.196428571428573,
+      "coverage": 1.0,
+      "exact_cause_accuracy": 1.0,
+      "external_sensor_correct": 1.0,
+      "false_alarm_rate": 0.020833333333333332,
+      "mean_counterfactual_mse": 0.003454097283284438,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.13/two_sensors/cycle/calibrated": {
+      "avg_probe_cost": 30.0,
+      "coverage": 1.0,
+      "exact_cause_accuracy": 1.0,
+      "external_sensor_correct": 1.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.0038882384030656876,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.13/two_sensors/cycle/fixed": {
+      "avg_probe_cost": 30.0,
+      "coverage": 1.0,
+      "exact_cause_accuracy": 1.0,
+      "external_sensor_correct": 1.0,
+      "false_alarm_rate": 0.020833333333333332,
+      "mean_counterfactual_mse": 0.0038965884906227355,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.35/one_sensor/adaptive/calibrated": {
+      "avg_probe_cost": 8.619047619047619,
+      "coverage": 0.1875,
+      "exact_cause_accuracy": 0.1875,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.326357456395196,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.020833333333333332
+    },
+    "0.35/one_sensor/adaptive/fixed": {
+      "avg_probe_cost": 24.029761904761905,
+      "coverage": 0.15416666666666667,
+      "exact_cause_accuracy": 0.15416666666666667,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.9791666666666666,
+      "mean_counterfactual_mse": 0.047192078038296344,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.35/one_sensor/cycle/calibrated": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.1625,
+      "exact_cause_accuracy": 0.1625,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.19341353015915405,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.0
+    },
+    "0.35/one_sensor/cycle/fixed": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.15833333333333333,
+      "exact_cause_accuracy": 0.15833333333333333,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.9791666666666666,
+      "mean_counterfactual_mse": 0.04324053572592687,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.35/two_sensors/adaptive/calibrated": {
+      "avg_probe_cost": 7.505952380952381,
+      "coverage": 0.5458333333333333,
+      "exact_cause_accuracy": 0.4708333333333333,
+      "external_sensor_correct": 0.20833333333333334,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.4084773627135648,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.0625
+    },
+    "0.35/two_sensors/adaptive/fixed": {
+      "avg_probe_cost": 26.18452380952381,
+      "coverage": 0.7916666666666666,
+      "exact_cause_accuracy": 0.6666666666666666,
+      "external_sensor_correct": 0.59375,
+      "false_alarm_rate": 1.0,
+      "mean_counterfactual_mse": 0.05499438809153934,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.35/two_sensors/cycle/calibrated": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.6375,
+      "exact_cause_accuracy": 0.5291666666666667,
+      "external_sensor_correct": 0.17708333333333334,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.22825369965092182,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.0
+    },
+    "0.35/two_sensors/cycle/fixed": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.7708333333333334,
+      "exact_cause_accuracy": 0.6958333333333333,
+      "external_sensor_correct": 0.65625,
+      "false_alarm_rate": 1.0,
+      "mean_counterfactual_mse": 0.055262251344325726,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.65/one_sensor/adaptive/calibrated": {
+      "avg_probe_cost": 1.2321428571428572,
+      "coverage": 0.008333333333333333,
+      "exact_cause_accuracy": 0.008333333333333333,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 1.0498470216809654,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.0
+    },
+    "0.65/one_sensor/adaptive/fixed": {
+      "avg_probe_cost": 26.833333333333332,
+      "coverage": 0.0,
+      "exact_cause_accuracy": 0.0,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 1.0,
+      "mean_counterfactual_mse": 0.11067058870869668,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.65/one_sensor/cycle/calibrated": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.0,
+      "exact_cause_accuracy": 0.0,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 1.0697893891052224,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.0
+    },
+    "0.65/one_sensor/cycle/fixed": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.0,
+      "exact_cause_accuracy": 0.0,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 1.0,
+      "mean_counterfactual_mse": 0.10916598954367472,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.65/two_sensors/adaptive/calibrated": {
+      "avg_probe_cost": 1.3660714285714286,
+      "coverage": 0.125,
+      "exact_cause_accuracy": 0.058333333333333334,
+      "external_sensor_correct": 0.020833333333333332,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 1.0081989440301353,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.0
+    },
+    "0.65/two_sensors/adaptive/fixed": {
+      "avg_probe_cost": 26.979166666666668,
+      "coverage": 0.0,
+      "exact_cause_accuracy": 0.0,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 1.0,
+      "mean_counterfactual_mse": 0.11219106661158307,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    },
+    "0.65/two_sensors/cycle/calibrated": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.12083333333333333,
+      "exact_cause_accuracy": 0.041666666666666664,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 0.0,
+      "mean_counterfactual_mse": 0.9837629973072886,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 0.0
+    },
+    "0.65/two_sensors/cycle/fixed": {
+      "avg_probe_cost": 30.0,
+      "coverage": 0.0,
+      "exact_cause_accuracy": 0.0,
+      "external_sensor_correct": 0.0,
+      "false_alarm_rate": 1.0,
+      "mean_counterfactual_mse": 0.11050356635844434,
+      "n_synthetic_worlds": 336,
+      "nonlinear_unknown_rate": 1.0
+    }
+  },
+  "seeds": 48,
+  "status": "post-pilot exploratory stress test"
+}

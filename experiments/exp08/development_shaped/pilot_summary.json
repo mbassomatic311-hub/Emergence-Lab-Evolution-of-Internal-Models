@@ -1,0 +1,38 @@
+{
+  "status": "development only, NOT preregistered",
+  "selection_signal": "shaped",
+  "seeds": [
+    1103,
+    1205,
+    1411
+  ],
+  "generations": 14,
+  "population": 18,
+  "episodes_per_evaluation": 12,
+  "food_means": {
+    "evolved_recurrent": {
+      "stable": 0.05555555555555555,
+      "shift+dropout": 0.05555555555555555
+    },
+    "evolved_feedforward": {
+      "stable": 0.08333333333333333,
+      "shift+dropout": 0.1111111111111111
+    },
+    "random_selection": {
+      "stable": 0.08333333333333333,
+      "shift+dropout": 0.08333333333333333
+    },
+    "random": {
+      "stable": 0.1111111111111111,
+      "shift+dropout": 0.1111111111111111
+    },
+    "greedy": {
+      "stable": 1.0833333333333333,
+      "shift+dropout": 0.6388888888888888
+    },
+    "comparator": {
+      "stable": 4.166666666666667,
+      "shift+dropout": 3.0555555555555554
+    }
+  }
+}

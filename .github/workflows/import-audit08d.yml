@@ -1,0 +1,71 @@
+name: Verify and import Experiment 08D research
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["AUDIT08D_SOURCE_PAYLOAD.txt", ".github/workflows/import-audit08d.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  scientific-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify source archive and extract safely
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import io, base64, hashlib, tarfile, lzma
+          p=Path('AUDIT08D_SOURCE_PAYLOAD.txt')
+          compressed=base64.b64decode(p.read_text().strip(),validate=True)
+          expected='f64cbbbcfcbd4ab5957632066a890fbe8e3c62fbddfa708270397d238eff726b'
+          if hashlib.sha256(compressed).hexdigest()!=expected:
+              raise SystemExit('Source SHA-256 mismatch')
+          data=lzma.decompress(compressed,memlimit=256_000_000)
+          expected_files={
+              'experiments/exp08/audit08d_learning.py',
+              'experiments/exp08/test_audit08d_learning.py',
+              'experiments/exp08/DEVELOPMENT_AUDIT_08D.md',
+          }
+          with tarfile.open(fileobj=io.BytesIO(data),mode='r:') as archive:
+              members=archive.getmembers()
+              if {m.name for m in members}!=expected_files or len(members)!=3:
+                  raise SystemExit('Unexpected source archive member set')
+              for m in members:
+                  path=PurePosixPath(m.name)
+                  if not m.isfile() or m.size>50000 or path.is_absolute() or '..' in path.parts or Path(m.name).exists():
+                      raise SystemExit('Archive validation or existing-file conflict: '+m.name)
+              for m in members:
+                  dest=Path(m.name);dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(archive.extractfile(m).read())
+          print('Source SHA-256 valid. Three research source files extracted.')
+          PY
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt numpy==2.3.5
+      - name: Run all Experiment 08 software tests
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python -m unittest -v test_exp08.py test_audit_fitness_noise.py test_audit_world_controls.py test_audit08c_learning.py test_audit08d_learning.py
+      - name: Reproduce development-only experimental results and verify exact checksums
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python audit08d_learning.py --stable-train 192 --shift-train 192 --test 72 --val 48 --epochs 36 --policy 72 --out development_learning08d > /tmp/exp08d-run.log
+          echo "2243352e60b70c58ad0748b5efcef7dbaf08cee1b6d63372ca1c70bac4058d99  development_learning08d/summary.json" | sha256sum -c -
+          echo "072c05e7e06a17bb160b2d5df447cb8bec2fbc59e3e6d15b5005b3d587407ab1  development_learning08d/model_comparisons.csv" | sha256sum -c -
+          echo "8f8071f649cb61b06e7ab93f4ce545812b821a097dcad00ee5a4d0ba73537344  development_learning08d/policy_episode_results.csv" | sha256sum -c -
+      - name: Commit source, raw data and full development report
+        run: |
+          rm -f AUDIT08D_SOURCE_PAYLOAD.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish Experiment 08D inductive-bias development audit and data"
+          git push origin HEAD:research/exp08-development-2d

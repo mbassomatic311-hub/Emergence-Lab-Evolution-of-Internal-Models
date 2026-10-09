@@ -1,0 +1,143 @@
+{
+  "classification": "EXPLORATORY developmental counterfactual simulator, not preregistered",
+  "worlds": 192,
+  "steps_per_diagnostic": 12,
+  "classes": [
+    "actuator",
+    "world",
+    "visual"
+  ],
+  "decision_threshold": 0.8,
+  "model_hypotheses": [
+    "actuator",
+    "world",
+    "visual",
+    "no_change"
+  ],
+  "conditions": {
+    "passive_single": {
+      "n_trials": 576,
+      "mean_accuracy_with_abstention": 0.0,
+      "mean_argmax_accuracy": 0.3333333333333333,
+      "fraction_resolved": 0.0,
+      "accuracy_given_resolution": null,
+      "mean_true_class_probability": 0.3333333333333333,
+      "confusion": {
+        "actuator": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 192
+        },
+        "world": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 192
+        },
+        "visual": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 192
+        }
+      }
+    },
+    "passive_dual": {
+      "n_trials": 576,
+      "mean_accuracy_with_abstention": 0.3333333333333333,
+      "mean_argmax_accuracy": 0.6666666666666666,
+      "fraction_resolved": 0.3333333333333333,
+      "accuracy_given_resolution": 1.0,
+      "mean_true_class_probability": 0.6666666666666666,
+      "confusion": {
+        "actuator": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 192
+        },
+        "world": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 192
+        },
+        "visual": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 192,
+          "no_change": 0,
+          "undetermined": 0
+        }
+      }
+    },
+    "active_single": {
+      "n_trials": 576,
+      "mean_accuracy_with_abstention": 0.3333333333333333,
+      "mean_argmax_accuracy": 0.6666666666666666,
+      "fraction_resolved": 0.3333333333333333,
+      "accuracy_given_resolution": 1.0,
+      "mean_true_class_probability": 0.6666666666666666,
+      "confusion": {
+        "actuator": {
+          "actuator": 192,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 0
+        },
+        "world": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 192
+        },
+        "visual": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 192
+        }
+      }
+    },
+    "active_dual": {
+      "n_trials": 576,
+      "mean_accuracy_with_abstention": 1.0,
+      "mean_argmax_accuracy": 1.0,
+      "fraction_resolved": 1.0,
+      "accuracy_given_resolution": 1.0,
+      "mean_true_class_probability": 1.0,
+      "confusion": {
+        "actuator": {
+          "actuator": 192,
+          "world": 0,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 0
+        },
+        "world": {
+          "actuator": 0,
+          "world": 192,
+          "visual": 0,
+          "no_change": 0,
+          "undetermined": 0
+        },
+        "visual": {
+          "actuator": 0,
+          "world": 0,
+          "visual": 192,
+          "no_change": 0,
+          "undetermined": 0
+        }
+      }
+    }
+  }
+}

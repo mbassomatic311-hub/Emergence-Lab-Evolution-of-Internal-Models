@@ -1,0 +1,91 @@
+name: Import Experiment 08 fitness and world audits
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["AUDIT_08B_IMPORT_PAYLOAD.txt", ".github/workflows/import-audit08b.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate and extract frozen audit payload
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, hashlib, io, lzma, tarfile
+          from pathlib import Path, PurePosixPath
+          package=Path('AUDIT_08B_IMPORT_PAYLOAD.txt')
+          content=base64.b64decode(package.read_text().strip(),validate=True)
+          expected='3fadafdad45522bb5a17374c86cca9805e03de19439def85c5a1552c7ef69f2e'
+          if hashlib.sha256(content).hexdigest()!=expected:
+              raise SystemExit('Payload checksum does not match recorded audit SHA256')
+          raw=lzma.decompress(content,memlimit=256_000_000)
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as package_tar:
+              items=package_tar.getmembers()
+              names=[m.name for m in items]
+              if len(items)!=11 or len(names)!=len(set(names)):
+                  raise SystemExit('Unexpected number of audit files')
+              for item in items:
+                  p=PurePosixPath(item.name)
+                  if (not item.isfile() or item.size > 100_000
+                      or p.is_absolute() or '..' in p.parts
+                      or p.parts[:2] != ('experiments','exp08')):
+                      raise SystemExit('Unsafe archive entry: '+item.name)
+                  if Path(item.name).exists():
+                      raise SystemExit('Refusing to overwrite: '+item.name)
+              for item in items:
+                  target=Path(item.name); target.parent.mkdir(parents=True,exist_ok=True)
+                  target.write_bytes(package_tar.extractfile(item).read())
+          print('Validated and unpacked 11 independent audit artifacts')
+          PY
+      - name: Install audit dependencies
+        run: python -m pip install 'numpy>=1.26,<3'
+      - name: Run simulator and audit tests
+        working-directory: experiments/exp08
+        run: |
+          python -m unittest -v test_exp08.py test_audit_fitness_noise.py test_audit_world_controls.py
+      - name: Reproduce declared development audit metrics
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python audit_fitness_noise.py --out /tmp/audit-fitness --seeds 3 --population 18 --generations 14 --eval-n 12 --high-eval 16
+          python audit_world_controls.py --out /tmp/audit-world --eval-n 12
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+          for kind,file_a,file_b in [
+              ('fitness',Path('development_fitness_audit/summary.json'),Path('/tmp/audit-fitness/summary.json')),
+              ('world',Path('development_world_audit/reference_summary.json'),Path('/tmp/audit-world/reference_summary.json'))
+          ]:
+              expected=json.loads(file_a.read_text())
+              actual=json.loads(file_b.read_text())
+              if kind == 'fitness':
+                  assert expected['seeds'] == actual['seeds']
+                  for key,val in expected['mean_food_by_environment'].items():
+                      assert math.isclose(val,actual['mean_food_by_environment'][key],abs_tol=1e-12)
+                  for key,val in expected['noise_diagnostics'].items():
+                      assert val is not None and math.isclose(val,actual['noise_diagnostics'][key],abs_tol=1e-12)
+              else:
+                  assert expected['n_population_seeds']==actual['n_population_seeds']
+                  for name,envs in expected['mean_food'].items():
+                      for env,val in envs.items():
+                          assert math.isclose(val,actual['mean_food'][name][env],abs_tol=1e-12)
+          print('Both audit summaries reproduced exactly.')
+          PY
+      - name: Commit verified development audit
+        shell: bash
+        run: |
+          rm AUDIT_08B_IMPORT_PAYLOAD.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Document Experiment 08 selection noise, world validity and ceiling"
+          git push origin HEAD:research/exp08-development-2d

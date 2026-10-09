@@ -1,0 +1,105 @@
+name: Import and verify Experiment 08E self-supervised development
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["EXPERIMENT_08E_IMPORT_PAYLOAD.txt"]
+permissions:
+  contents: write
+jobs:
+  import-and-reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate immutable research payload and extract only new files
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from hashlib import sha256
+          import base64,lzma,tarfile,io
+          p=Path('EXPERIMENT_08E_IMPORT_PAYLOAD.txt')
+          blob=base64.b64decode(p.read_text().strip(),validate=True)
+          digest='86c5f2779934e9b3be14a534f92d0653f47c687c702029bdf32dedd86d077451'
+          if sha256(blob).hexdigest()!=digest:raise SystemExit('SHA-256 payload mismatch')
+          raw=lzma.decompress(blob,memlimit=256_000_000)
+          expected={
+              'experiments/exp08/audit08e_selfsupervised.py',
+              'experiments/exp08/audit08e_analyze.py',
+              'experiments/exp08/test_audit08e_selfsupervised.py',
+              'experiments/exp08/DEVELOPMENT_AUDIT_08E.md',
+              'experiments/exp08/development_selfsupervised08e/summary.json',
+              'experiments/exp08/development_selfsupervised08e/probe_per_seed.csv',
+              'experiments/exp08/development_selfsupervised08e/navigation_per_seed.csv',
+              'experiments/exp08/development_selfsupervised08e/exploratory_intervals.json'
+          }
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as tar:
+              members=tar.getmembers()
+              if len(members)!=8 or {m.name for m in members}!=expected:
+                  raise SystemExit('Unexpected file list')
+              for m in members:
+                  name=PurePosixPath(m.name)
+                  if not m.isfile() or m.size>200_000 or name.is_absolute() or '..' in name.parts or name.parts[:2]!=('experiments','exp08') or Path(m.name).exists():
+                      raise SystemExit('Invalid entry or overwrite refused: '+m.name)
+              for m in members:
+                  path=Path(m.name);path.parent.mkdir(parents=True,exist_ok=True)
+                  path.write_bytes(tar.extractfile(m).read())
+          print('Verified and unpacked all 8 Experiment 08E files.')
+          PY
+      - name: Install fixed numerical dependencies
+        run: python -m pip install 'numpy==2.3.5'
+      - name: All simulation and developmental regression tests
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python -m unittest -q test_exp08.py test_audit_fitness_noise.py test_audit_world_controls.py test_audit08c_learning.py test_audit08d_learning.py test_audit08e_selfsupervised.py
+      - name: Independently regenerate 144-world predictions, navigation, and post-hoc intervals
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        shell: bash
+        run: |
+          python audit08e_selfsupervised.py --probes 24 --navigation 24 --out /tmp/exp08e-repeat >/dev/null
+          python audit08e_analyze.py --data-dir /tmp/exp08e-repeat >/dev/null
+          python - <<'PY'
+          import json,math,csv
+          from pathlib import Path
+          a=Path('development_selfsupervised08e')
+          b=Path('/tmp/exp08e-repeat')
+          def same(x,y):
+              if isinstance(x,dict):
+                  assert x.keys()==y.keys()
+                  for key in x:same(x[key],y[key])
+              elif isinstance(x,list):
+                  assert len(x)==len(y)
+                  for v,w in zip(x,y):same(v,w)
+              elif isinstance(x,(float,int)):
+                  assert math.isclose(float(x),float(y),rel_tol=0,abs_tol=1e-9),(x,y)
+              else: assert x==y,(x,y)
+          for n in ('summary.json','exploratory_intervals.json'):
+              same(json.loads((a/n).read_text()),json.loads((b/n).read_text()))
+              print('Reproduced JSON:',n)
+          for n in ('probe_per_seed.csv','navigation_per_seed.csv'):
+              with (a/n).open(newline='') as f:rows_a=list(csv.DictReader(f))
+              with (b/n).open(newline='') as f:rows_b=list(csv.DictReader(f))
+              assert len(rows_a)==len(rows_b)
+              for old,new in zip(rows_a,rows_b):
+                  assert old.keys()==new.keys()
+                  for key in old:
+                      if old[key]==new[key]:continue
+                      try:
+                          assert math.isclose(float(old[key]),float(new[key]),rel_tol=0,abs_tol=1e-9),(n,key,old[key],new[key])
+                      except ValueError:raise AssertionError((n,key,old[key],new[key]))
+              print('Reproduced seed-level CSV:',n,len(rows_a))
+          PY
+      - name: Commit verified source and results to draft development branch
+        run: |
+          rm -f EXPERIMENT_08E_IMPORT_PAYLOAD.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add reproducible label-free Experiment 08E action-outcome pilot"
+          git push origin HEAD:research/exp08-development-2d

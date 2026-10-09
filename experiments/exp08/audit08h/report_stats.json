@@ -1,0 +1,8 @@
+{
+  "probe_cost_diff_adaptive_minus_cycle": -12.02827380952381,
+  "probe_cost_ci95": [
+    -12.357142857142856,
+    -11.697916666666666
+  ],
+  "seeds": 96
+}

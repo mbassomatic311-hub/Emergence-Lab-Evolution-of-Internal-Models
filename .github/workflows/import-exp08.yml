@@ -1,0 +1,71 @@
+name: Import and test Experiment 08 development package
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["EXPERIMENT_08_IMPORT_PAYLOAD.txt"]
+permissions:
+  contents: write
+jobs:
+  import-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate compressed source package and extract
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import base64,hashlib,io,lzma,tarfile
+          p=Path("EXPERIMENT_08_IMPORT_PAYLOAD.txt")
+          if not p.exists():raise SystemExit("Required import payload absent")
+          compressed=base64.b64decode(p.read_text().strip(),validate=True)
+          expected="38be4585e0c6bf1ef58d57537dcffd0913f861f28d3972e2fb9f948927b3905e"
+          if hashlib.sha256(compressed).hexdigest()!=expected:raise SystemExit("Payload SHA-256 mismatch")
+          data=lzma.decompress(compressed,memlimit=100000000)
+          with tarfile.open(fileobj=io.BytesIO(data),mode="r:") as archive:
+              members=archive.getmembers()
+              paths=[m.name for m in members]
+              if len(members)!=15 or len(set(paths))!=15:raise SystemExit("Unexpected archive count")
+              if not all(m.isfile() and m.size<500000 for m in members):raise SystemExit("Invalid archive entries")
+              for m in members:
+                  target=PurePosixPath(m.name)
+                  if target.is_absolute() or ".." in target.parts or target.parts[:2]!=("experiments","exp08"):
+                      raise SystemExit("Unsafe path: "+m.name)
+                  path=Path(m.name)
+                  if path.exists():raise SystemExit("Refusing overwrite: "+str(path))
+                  path.parent.mkdir(parents=True,exist_ok=True)
+                  path.write_bytes(archive.extractfile(m).read())
+          print("Integrity-checked 15 Experiment 08 development files extracted.")
+          PY
+      - name: Install dependencies
+        run: python -m pip install 'numpy>=1.26,<3'
+      - name: Check simulator and mutation invariants
+        working-directory: experiments/exp08
+        run: python -m unittest -v test_exp08.py
+      - name: Reproduce sparse pilot summary from development seeds only
+        working-directory: experiments/exp08
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python engine.py --seeds 3 --generations 14 --population 18 --eval-n 12 --selection-signal sparse --out /tmp/exp08-reproduce
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          old=json.loads(Path("development_with_bayes/pilot_summary.json").read_text())["food_means"]
+          new=json.loads(Path("/tmp/exp08-reproduce/pilot_summary.json").read_text())["food_means"]
+          for condition in old:
+              for env in old[condition]:
+                  a,b=old[condition][env],new[condition][env]
+                  if abs(a-b)>1e-9:raise SystemExit(f"Mismatch {condition} {env}: {a} vs {b}")
+          print("Development pilot reproduced from source.")
+          PY
+      - name: Commit validated code and research data to branch
+        run: |
+          rm -f EXPERIMENT_08_IMPORT_PAYLOAD.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Import reproducible Experiment 08 development and negative pilots"
+          git push origin HEAD:research/exp08-development-2d

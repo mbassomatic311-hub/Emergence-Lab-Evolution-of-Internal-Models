@@ -1,0 +1,94 @@
+name: Import and reproduce Experiment 08C developmental audit
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["Emergence_Lab_Experiment_08C_Development_Audit.zip"]
+
+permissions:
+  contents: write
+
+jobs:
+  import-audit-08c:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify exact archive and extract without overwriting source
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from zipfile import ZipFile
+          from hashlib import sha256
+          path=Path("Emergence_Lab_Experiment_08C_Development_Audit.zip")
+          if not path.is_file():raise SystemExit("The audit ZIP is missing")
+          expected="8be6c5392a2d60c4e519929a136bf9075442ba227a1c8ba71d2c8e9004c15382"
+          if sha256(path.read_bytes()).hexdigest()!=expected:raise SystemExit("Archive SHA256 mismatch")
+          names={
+            "experiments/exp08/audit08c_learning.py",
+            "experiments/exp08/audit08c_sensitivity.py",
+            "experiments/exp08/test_audit08c_learning.py",
+            "experiments/exp08/DEVELOPMENT_AUDIT_08C.md",
+            "experiments/exp08/development_identifiability_08c/summary.json",
+            "experiments/exp08/development_identifiability_08c/weights.json",
+            "experiments/exp08/development_identifiability_08c/initialization_sensitivity.csv",
+            "experiments/exp08/development_identifiability_08c/initialization_sensitivity.json"
+          }
+          with ZipFile(path) as z:
+              members=z.infolist()
+              if len(members)!=8 or {m.filename for m in members}!=names:raise SystemExit("Unexpected archive contents")
+              if z.testzip() is not None:raise SystemExit("ZIP CRC mismatch")
+              for m in members:
+                  parts=PurePosixPath(m.filename)
+                  if (m.is_dir() or m.file_size>500_000 or parts.is_absolute()
+                      or ".." in parts.parts or Path(m.filename).exists()):
+                      raise SystemExit("Invalid entry or overwrite: "+m.filename)
+              for m in members:
+                  target=Path(m.filename);target.parent.mkdir(parents=True,exist_ok=True)
+                  target.write_bytes(z.read(m.filename))
+          print("Verified and extracted all 8 audit files")
+          PY
+      - name: Install reproducibility dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Test original simulator, methods audits, and supervised gradient calculations
+        working-directory: experiments/exp08
+        run: python -m unittest -v test_exp08.py test_audit_fitness_noise.py test_audit_world_controls.py test_audit08c_learning.py
+      - name: Reproduce reported developmental summaries exactly
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        working-directory: experiments/exp08
+        shell: bash
+        run: |
+          python audit08c_learning.py --out /tmp/emergence-08c --train 192 --val 48 --test 72 --epochs 36 --rollout 36
+          python audit08c_sensitivity.py --out /tmp/emergence-08c --epochs 36
+          python - <<'PY'
+          import json,math
+          from pathlib import Path
+          for name in ['summary.json','initialization_sensitivity.json']:
+              original=json.loads((Path('development_identifiability_08c')/name).read_text())
+              reproduc=json.loads((Path('/tmp/emergence-08c')/name).read_text())
+              def same(a,b,path='root'):
+                  assert type(a)==type(b),path
+                  if isinstance(a,dict):
+                      assert a.keys()==b.keys(),path
+                      for k in a:same(a[k],b[k],path+'.'+k)
+                  elif isinstance(a,list):
+                      assert len(a)==len(b),path
+                      for i,(x,y) in enumerate(zip(a,b)):same(x,y,path+str(i))
+                  elif isinstance(a,float):
+                      assert math.isclose(a,b,rel_tol=0,abs_tol=1e-11),(path,a,b)
+                  else:assert a==b,(path,a,b)
+              same(original,reproduc)
+              print('Reproduced:',name)
+          PY
+      - name: Commit verified audit to the existing draft branch
+        shell: bash
+        run: |
+          rm -f Emergence_Lab_Experiment_08C_Development_Audit.zip
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Import reproducible Experiment 08C developmental supervision audit"
+          git push origin HEAD:research/exp08-development-2d
