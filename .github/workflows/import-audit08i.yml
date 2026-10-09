@@ -1,0 +1,100 @@
+name: Import and reproduce Experiment 08I nonlinear sensory transfer
+on:
+  push:
+    branches: ["research/exp08-development-2d"]
+    paths: ["EXP08I_GITHUB_TRANSFER.txt"]
+
+permissions:
+  contents: write
+
+jobs:
+  audit-08i:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify source transfer hash, manifest, and safe extraction
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import base64,hashlib,io,lzma,tarfile
+          transfer=Path('EXP08I_GITHUB_TRANSFER.txt')
+          encoded=transfer.read_text().strip()
+          compressed=base64.b64decode(encoded,validate=True)
+          expected='c9433d95f316079a351d9c239091cf3ccfd52fd7b7384b33214d08a54c2b5b8d'
+          if hashlib.sha256(compressed).hexdigest()!=expected:
+              raise SystemExit('08I archive checksum mismatch')
+          raw=lzma.decompress(compressed,memlimit=256_000_000)
+          if len(raw)>5_000_000:raise SystemExit('Decompressed transfer too large')
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as tar:
+              members=tar.getmembers()
+              if len(members)!=16 or len({m.name for m in members})!=16:
+                  raise SystemExit('Unexpected file count or duplicate paths')
+              contents={}
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if not m.isfile() or m.size>1_000_000 or p.is_absolute() or '..' in p.parts or p.parts[:3]!=('experiments','exp08','audit08i') or Path(m.name).exists():
+                      raise SystemExit('Bad or overwriting file path: '+m.name)
+                  contents[m.name]=tar.extractfile(m).read()
+              manifest_path='experiments/exp08/audit08i/SHA256SUMS.txt'
+              if manifest_path not in contents:raise SystemExit('No integrity manifest')
+              checks={}
+              for line in contents[manifest_path].decode().splitlines():
+                  digest,path=line.split('  ',1)
+                  if path in checks:raise SystemExit('Duplicate checksum path')
+                  checks[path]=digest
+              if set(checks)!=set(contents)-{manifest_path}:raise SystemExit('Manifest mismatch')
+              for path,digest in checks.items():
+                  if hashlib.sha256(contents[path]).hexdigest()!=digest:
+                      raise SystemExit('File SHA mismatch: '+path)
+              for name,content in contents.items():
+                  p=Path(name);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(content)
+          print('16 source, results, and manifest files verified')
+          PY
+      - name: Install pinned simulation dependencies
+        run: python -m pip install numpy==2.3.5
+      - name: Verify code invariants
+        working-directory: experiments/exp08/audit08i
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: python -m unittest -v test_experiment08i.py
+      - name: Reproduce main 48-seed world sample
+        working-directory: experiments/exp08/audit08i
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python experiment08i.py --seeds 48 --out /tmp/exp08i-main
+          python export_per_world.py --directory /tmp/exp08i-main
+      - name: Reproduce 24-seed restricted-action stress
+        working-directory: experiments/exp08/audit08i
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python experiment08i.py --seeds 24 --policy repeat --out /tmp/exp08i-repeat
+          python export_per_world.py --directory /tmp/exp08i-repeat
+      - name: Reproduce 24-seed high-noise stress
+        working-directory: experiments/exp08/audit08i
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python experiment08i.py --seeds 24 --noise .13 --out /tmp/exp08i-noise
+          python export_per_world.py --directory /tmp/exp08i-noise
+      - name: Check all reports and seed-level data
+        working-directory: experiments/exp08/audit08i
+        run: |
+          python check_reproduction.py --reference . \
+            --candidate-main /tmp/exp08i-main \
+            --candidate-repeat /tmp/exp08i-repeat \
+            --candidate-noise /tmp/exp08i-noise
+      - name: Preserve validated research on draft feature branch
+        shell: bash
+        run: |
+          rm -f EXP08I_GITHUB_TRANSFER.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Archive nonlinear transfer experiment 08I development and negative controls"
+          git push origin HEAD:research/exp08-development-2d
