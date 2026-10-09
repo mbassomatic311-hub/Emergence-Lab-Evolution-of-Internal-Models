@@ -78,7 +78,9 @@ OPENBLAS_NUM_THREADS=1 python audit08g_stress.py --worlds 192 --out /tmp/causal0
 sha256sum /tmp/causal08g/{per_world.csv,summary.json,noise_sweep.csv,outside_model.csv,stress_summary.json}
 ```
 
-Compare regenerated files byte-for-byte with the 5 datasets in `development_causal08g/`. Source/tests and data are preserved; no confirmatory samples have been generated.
+On the original Python 3.13 / NumPy 2.3.5 development runtime, the five outputs reproduced byte-for-byte. On GitHub Actions' Python 3.11 runner, an unpinned NumPy upgrade (2.4.6) changed some high-noise sensitivity outputs. Pinning NumPy 2.3.5 restored the aggregate results, although tiny cross-platform differences in floating-point CSV fields remained. The final passing GitHub workflow compares **every seed ID and categorical prediction exactly** and **every numeric field within absolute tolerance 1e-10**, across all five datasets. The initial failed CI runs remain visible as a public audit trail; neither the source data nor observed conclusions were silently modified to pass. See the successful GitHub Actions run 37906741379.
+
+Source/tests and data are preserved; no confirmatory samples have been generated.
 
 ## Most important next gate
 
