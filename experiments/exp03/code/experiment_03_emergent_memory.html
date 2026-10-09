@@ -1,0 +1,142 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>Emergence Lab — Experiment 03 | Can memory evolve?</title><style>
+:root{color-scheme:dark;--bg:#080e19;--panel:#111d2b;--outline:#2d4256;--text:#ecf5fb;--muted:#aec1d0;--accent:#73e5bb;--coral:#ff9b90;--gold:#f8cc80;--indigo:#98b6ff}*{box-sizing:border-box}
+body{margin:0;color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(ellipse at 15% 0,#1b3342 0,transparent 37%),var(--bg)}main{max-width:1240px;margin:0 auto;padding:23px 24px 70px}header{display:flex;gap:12px;align-items:start;justify-content:space-between;margin-bottom:22px}.eyebrow{font-size:11px;letter-spacing:.18em;color:var(--accent);font-weight:800;text-transform:uppercase}h1{margin:3px 0 7px;font-size:clamp(26px,3.7vw,45px);font-weight:750;letter-spacing:-.045em}p{margin:6px 0 12px}.lede{font-size:14px;color:var(--muted);max-width:800px}.chip{color:var(--muted);border:1px solid var(--outline);border-radius:30px;padding:8px 12px;white-space:nowrap;font-size:11px}.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,1fr);gap:16px}.panel{background:linear-gradient(135deg,#122337,#101b2a);border:1px solid var(--outline);border-radius:15px;padding:17px;min-width:0;box-shadow:0 13px 40px #00000025}.panel h2{font-size:15px;margin:0 0 10px}.panel h3{font-size:13px;margin:0 0 6px}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted);line-height:1.6}.canvasWrap{border:1px solid #2b4455;border-radius:10px;overflow:hidden;background:#091622}.canvasWrap canvas{display:block;width:100%;height:auto}.legend{display:flex;gap:13px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin:10px 0}.pip{display:inline-block;border-radius:30px;width:9px;height:9px;margin-right:5px;vertical-align:middle}.controls{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}.btn{appearance:none;background:#243e52;border:1px solid #477087;border-radius:9px;color:var(--text);padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer}.btn.primary{background:var(--accent);border-color:var(--accent);color:#09302a}.btn:hover{filter:brightness(1.12)}.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #fff;outline-offset:3px}.fields{display:grid;grid-template-columns:1.9fr 1fr 1fr;gap:9px;margin:12px 0}label{font-size:11px;color:var(--muted);font-weight:650;display:grid;gap:5px;min-width:0}select,input{font:12px system-ui;color:var(--text);background:#0b1a27;border-radius:8px;border:1px solid #3e5c71;padding:10px 8px;width:100%;min-width:0}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:13px}.stat{border-radius:9px;background:#0b1b29;padding:11px;border:1px solid var(--outline)}.num{font-size:27px;line-height:1.2;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--muted)}.chart{width:100%;height:170px;display:block}.divider{height:1px;background:var(--outline);margin:13px 0}.circuit{background:#0b1925;border:1px solid var(--outline);border-radius:11px;padding:11px;margin-bottom:9px}.circuit svg{width:100%;display:block}.circuit text{font:12px system-ui;fill:#d5e7f2}.circuit .edge{stroke:#40576c;stroke-width:6;stroke-linecap:round;transition:stroke .25s}.circuit .wireon{stroke:var(--accent)}.circuit .node{fill:#1d3548;stroke:#49647b}.circuit .sublabel{fill:#a1b6c6;font-size:10px}.breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}.breakdown div{background:#0c1d2b;border-radius:8px;padding:9px;text-align:center}.breakdown strong{display:block;font-size:16px;font-variant-numeric:tabular-nums}.breakdown span{font-size:10px;color:var(--muted)}.details{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.details p{font-size:12px;color:var(--muted);line-height:1.6}.notice{font-size:12px;color:var(--accent);min-height:19px;margin:9px 0 0}.foot{margin-top:14px;font-size:11px;color:var(--muted)}.link{color:var(--accent)}@media(max-width:900px){.layout{grid-template-columns:1fr}.details{grid-template-columns:1fr}}@media(max-width:580px){main{padding:15px 13px 55px}header .chip{display:none}.panel{padding:12px}.fields{grid-template-columns:1fr 1fr}.fields label:first-child{grid-column:span 2}.btn{flex:1}.num{font-size:24px}.breakdown strong{font-size:14px}}
+</style></head><body><main>
+<header><div><div class="eyebrow">Emergence Lab / Experiment 03</div><h1>Can memory itself evolve?</h1><p class="lede">Agents begin without an active memory circuit. Mutations may build a pathway that captures a warning, maintains it through a delay, and uses it to avoid danger. Compare the evolutionary world against controls.</p></div><div class="chip">Simulation of behavior, not proof of awareness</div></header>
+<div class="layout"><section class="panel"><h2>01 / The world — a delayed warning</h2><div class="canvasWrap"><canvas id="field" width="720" height="340" role="img" aria-label="A warning flashes, disappears for three time steps, then agents choose one of two gates"></canvas></div>
+<div class="legend"><span><i class="pip" style="background:var(--gold)"></i>Earlier warning</span><span><i class="pip" style="background:var(--accent)"></i>Safe choices</span><span><i class="pip" style="background:var(--coral)"></i>Danger</span></div>
+<div class="controls"><button id="play" class="btn primary">▶ Evolve</button><button id="step1" class="btn">+1 generation</button><button id="step50" class="btn">+50</button><button id="step400" class="btn">+400</button><button id="reset" class="btn">↻ Reset</button></div>
+<div class="fields"><label>Experimental condition<select id="mode"><option value="evolve">Mutations + inherited circuits</option><option value="locked">Structural mutations blocked</option><option value="scrambled">Warning unrelated to danger</option><option value="no_loop">Feedback disabled</option><option value="nonheritable">No inherited circuits</option></select></label><label>Random seed<input id="seed" type="number" min="1" max="2147483647" value="42"/></label><label>Speed<select id="speed"><option value="1">1 gen/frame</option><option value="3" selected>3 gen/frame</option><option value="7">7 gen/frame</option></select></label></div>
+<div class="controls"><button id="export" class="btn">↓ Export this run (CSV)</button></div><div id="notice" class="notice" role="status" aria-live="polite"></div>
+<p class="small">Each generation: 180 agents × 7 route decisions, with a 3-tick delay between cue and choice. Parents are selected partly by survival performance; offspring inherit their wiring and can mutate. Carrying unnecessary connections has a small fitness cost. This is genetic evolution <i>across generations</i>, not an individual learning during its lifetime.</p></section>
+<aside class="panel"><h2>02 / What evolved?</h2><div class="stats"><div class="stat"><div class="num" id="gen">0</div><span>Generations</span></div><div class="stat"><div class="num" id="accuracy">—</div><span>Correct decisions / last generation</span></div><div class="stat"><div class="num" id="complete">0%</div><span>Population with complete memory circuit</span></div><div class="stat"><div class="num" id="useful">0%</div><span>Population with correctly oriented circuit</span></div></div>
+<h2>Structural mutations can connect three functions</h2><div class="circuit"><svg viewBox="0 0 380 155" xmlns="http://www.w3.org/2000/svg" aria-label="Sensor-to-memory, memory feedback and memory-to-action circuit">
+<path id="sensWire" class="edge" d="M107 72 H144"/><path id="outWire" class="edge" d="M231 72 H273"/><path id="loopWire" class="edge" d="M169 42 V17 H204 V42" fill="none"/><path d="M199 35 L204 42 L209 35" stroke="currentColor" stroke-width="1.3" fill="none"/>
+<rect class="node" x="5" y="48" width="100" height="50" rx="9"/><rect class="node" x="146" y="48" width="84" height="50" rx="9"/><rect class="node" x="276" y="48" width="100" height="50" rx="9"/>
+<text x="55" y="68" text-anchor="middle">Sensor</text><text x="55" y="84" text-anchor="middle" class="sublabel">Cue input</text><text x="188" y="68" text-anchor="middle">Memory</text><text x="188" y="84" text-anchor="middle" class="sublabel">Stored state</text><text x="326" y="68" text-anchor="middle">Decision</text><text x="326" y="84" text-anchor="middle" class="sublabel">Choose gate</text><text x="188" y="10" text-anchor="middle" class="sublabel">Feedback loop</text><text x="188" y="130" text-anchor="middle" id="connText" class="sublabel">0% of agents carry all 3 connections</text>
+</svg><div class="breakdown"><div><strong id="sensorStat">0%</strong><span>Sensor link</span></div><div><strong id="loopStat">0%</strong><span>Feedback link</span></div><div><strong id="outputStat">0%</strong><span>Decision link</span></div></div></div>
+<h2>Correct decisions</h2><canvas id="performance" class="chart" width="480" height="166" role="img" aria-label="Graph of population choice accuracy over generations"></canvas><h2>Agents carrying all 3 connections</h2><canvas id="structural" class="chart" width="480" height="166" role="img" aria-label="Graph of full memory-circuit frequency over generations"></canvas><div class="divider"></div><div class="small" id="late">Run 40 or more generations to compare results.</div><p class="small" id="interpret"></p></aside></div>
+<div class="details"><section class="panel"><h3>What starts absent</h3><p>No agent initially has the sensor-to-memory edge, persistent feedback loop, or memory-to-decision connection. Mutation can create or remove each edge separately. No one agent is instructed to seek safety by remembering.</p></section><section class="panel"><h3>What we deliberately supply</h3><p>Predefined nodes and possible links, a one-bit warning, a fixed delay, resource consequences, wiring costs, reproductive selection, and mutation. Evolution chooses among circuit variants but cannot invent arbitrary new components.</p></section><section class="panel"><h3>What the result cannot demonstrate</h3><p>This is not a model of real abiogenesis or evidence that the agents have conscious experience. It demonstrates that selection can assemble a simple useful memory function from structural changes, under these specified rules.</p></section></div>
+<p class="foot">All computations run locally in this file. Same seed and condition reproduce the same outcome. This experiment extends <a class="link" href="experiment_02_prediction.html">Experiment 02</a>.</p>
+</main><script>'use strict';
+class RNG {
+  constructor(seed) { this.s = (Number(seed)>>>0) || 1; }
+  next() { this.s = (Math.imul(1664525, this.s) + 1013904223)>>>0; return this.s/4294967296; }
+  range(a,b) { return a + (b-a)*this.next(); }
+  normal() { return (this.next()+this.next()+this.next()+this.next()+this.next()+this.next()-3) * 0.40824829; }
+  index(n) { return Math.floor(this.next()*n); }
+}
+const POP=180, TRIALS=7, DELAY=3, MUT_ADD=.022, MUT_REMOVE=.009;
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const sig=(x)=>1/(1+Math.exp(-x));
+const edgeCount=(g)=>g.sensor+g.loop+g.output;
+const hasCircuit=(g)=>!!(g.sensor&&g.loop&&g.output);
+class EmergenceWorld {
+  constructor(seed=42, mode='evolve') {
+    this.seed=Number(seed)||42;this.mode=mode;this.rng=new RNG(this.seed);this.generation=0;
+    this.population=Array.from({length:POP},()=>this.blankGenome());
+    this.history=[];this.last=null;this.record(.5,0); }
+  blankGenome(){return {sensor:0,loop:0,output:0,decoder:this.rng.range(-2.5,2.5),retention:this.rng.range(.72,.99)};}
+  mutate(g){const n={...g};
+    if(this.mode!=='locked'){
+      for(const k of ['sensor','loop','output']){
+        if(n[k]===0&&this.rng.next()<MUT_ADD)n[k]=1;
+        else if(n[k]===1&&this.rng.next()<MUT_REMOVE)n[k]=0;
+      }
+    }
+    if(this.rng.next()<.09)n.decoder=clamp(n.decoder+this.rng.normal()*.50,-3.5,3.5);
+    if(this.rng.next()<.09)n.retention=clamp(n.retention+this.rng.normal()*.055,.5,1);
+    return n; }
+  choose(g,cue){
+    // The cue exists only at the beginning of a trial. The state is then updated
+    // during three blank ticks. Only a heritable feedback edge can preserve it.
+    let state=g.sensor?cue:0;
+    for(let j=0;j<DELAY;j++){
+      state=(g.loop&&this.mode!=='no_loop')?(g.retention*state+.13*this.rng.normal()):0;
+    }
+    let pRight=g.output?sig(2.9*g.decoder*state):.5;
+    return this.rng.next()<pRight?1:-1;
+  }
+  tick(){
+    this.generation++;
+    let score=new Float64Array(POP),hits=0,lastCue=1,lastSafe=1,left=0,right=0,correctLast=0;
+    for(let t=0;t<TRIALS;t++){
+      const cue=this.rng.next()<.5?-1:1;
+      const safe=this.mode==='scrambled'?(this.rng.next()<.5?-1:1):cue;
+      let thisCorrect=0,thisLeft=0,thisRight=0;
+      for(let i=0;i<POP;i++){
+        const action=this.choose(this.population[i],cue);
+        if(action===safe){score[i]++;hits++;thisCorrect++;}
+        if(action===-1)thisLeft++;else thisRight++;
+      }
+      lastCue=cue;lastSafe=safe;left=thisLeft;right=thisRight;correctLast=thisCorrect;
+    }
+    const parents=this.population;
+    let sums=new Float64Array(POP),total=0;
+    for(let i=0;i<POP;i++){
+      // Multiplicative penalty for extra wiring allows neutral and maladaptive
+      // circuits to be lost rather than becoming common without selective benefit.
+      total += Math.exp(3.0*(score[i]/TRIALS - .5)-.19*edgeCount(parents[i]));
+      sums[i]=total;
+    }
+    const children=[];
+    for(let i=0;i<POP;i++){
+      if(this.mode==='nonheritable') children.push(this.mutate(this.blankGenome()));
+      else {
+        const target=this.rng.next()*total;
+        let lo=0,hi=POP-1;
+        while(lo<hi){let mid=(lo+hi)>>1;if(sums[mid]<target)lo=mid+1;else hi=mid;}
+        children.push(this.mutate(parents[lo]));
+      }
+    }
+    const rate=hits/(POP*TRIALS);
+    this.last={cue:lastCue,safe:lastSafe,left,right,correct:correctLast,accuracy:rate};
+    this.population=children;
+    this.record(rate, correctLast/POP);
+    return this.last;
+  }
+  record(accuracy,lastChoice){
+    let sensor=0,loop=0,output=0,complete=0,positive=0,meanRet=0,wires=0;
+    for(const g of this.population){sensor+=g.sensor;loop+=g.loop;output+=g.output;wires+=edgeCount(g);meanRet+=g.retention;if(hasCircuit(g)){complete++;if(g.decoder>0)positive++;}}
+    this.history.push({gen:this.generation,accuracy,complete:complete/POP,useful:positive/POP,sensor:sensor/POP,loop:loop/POP,output:output/POP,wires:wires/POP,retention:meanRet/POP});
+  }
+  run(n){for(let i=0;i<n;i++)this.tick();return this;}
+  stats(){const h=this.history[this.history.length-1];const n=Math.min(40,this.generation);let late=0;
+    for(let i=0;i<n;i++)late+=this.history[this.history.length-1-i].accuracy;
+    return {...h,seed:this.seed,mode:this.mode,lateAccuracy:n?late/n:null,generations:this.generation,last:this.last};
+  }
+}
+
+
+
+const canvas=document.getElementById('field'),c=canvas.getContext('2d');
+let model=new EmergenceWorld(42,'evolve'),playing=false,handle=null;
+const $=id=>document.getElementById(id);
+function rect(x,y,w,h,fill,stroke='#324a59',r=9){c.fillStyle=fill;c.strokeStyle=stroke;c.lineWidth=1;c.beginPath();c.roundRect(x,y,w,h,r);c.fill();c.stroke();}
+function txt(str,x,y,size=13,color='#dce9f2',align='left',weight=400){c.fillStyle=color;c.font=`${weight} ${size}px system-ui`;c.textAlign=align;c.fillText(str,x,y);c.textAlign='left';}
+function drawField(){c.clearRect(0,0,720,340);c.fillStyle='#091723';c.fillRect(0,0,720,340);
+ rect(19,16,682,65,'#172c3c');txt('BEFORE THE DELAY — A SIGNAL FLASHES',35,37,11,'#b0c3cf');txt(model.last?(model.last.cue===-1?'◀ LEFT':'RIGHT ▶'):'◀ LEFT / RIGHT ▶',36,67,22,'#f8cc80','left',700);txt('Removed during 3 blank time steps',674,65,12,'#b4c8d2','right');
+ txt('THREE STEPS LATER — CHOOSE AN EXIT',26,109,12,'#b7c9d5');
+ for(const side of [-1,1]){let x=side===-1?25:369;const safe=model.last?model.last.safe===side:null;const fill=safe===null?'#182e41':safe?'#164238':'#422e39';rect(x,124,326,170,fill);txt(side===-1?'LEFT GATE':'RIGHT GATE',x+163,151,14,'#ecf4fb','center',700);txt(safe===null?'Unknown':safe?'SAFE + ENERGY':'DANGER',x+163,175,13,safe===null?'#b0c3cf':safe?'#73e5bb':'#ff9b90','center');
+ const count=model.last?(side===-1?model.last.left:model.last.right):0;
+ for(let i=0;i<Math.min(85,count);i++){c.fillStyle=safe?'#73e5bb':'#ff9b90';c.beginPath();c.arc(x+38+(i%17)*15.6,192+Math.floor(i/17)*13,3,0,Math.PI*2);c.fill();}
+ txt(model.last?`${count} agents chose this gate`:'No decisions yet',x+163,275,12,'#c6d8e2','center');
+ }
+ rect(20,307,680,24,'#192f40');txt(model.last?`Last challenge: ${model.last.correct} / ${POP} correct    •    ${TRIALS} challenges per generation`:'Run evolution to see circuit formation and choice outcomes.',35,324,12,'#dcecf3');
+}
+function chart(id,key,color,ymax=1){const canv=$(id),x=canv.getContext('2d'),W=canv.width,H=canv.height;const pad={l:35,r:12,t:12,b:26};x.clearRect(0,0,W,H);x.font='10px system-ui';x.strokeStyle='#31485c';x.fillStyle='#aabfce';for(let i=0;i<=4;i++){let yy=pad.t+(H-pad.t-pad.b)*i/4;x.beginPath();x.moveTo(pad.l,yy);x.lineTo(W-pad.r,yy);x.stroke();x.fillText(`${Math.round(ymax*100*(1-i/4))}%`,2,yy+3);}const n=model.history.length;const start=Math.max(0,n-1201);const step=Math.max(1,Math.ceil((n-start)/400));const dat=model.history.filter((v,i)=>i>=start&&(i%step===0||i===n-1));const first=dat[0].gen,last=Math.max(first+1,dat[dat.length-1].gen);const getX=g=>pad.l+(g-first)/(last-first)*(W-pad.l-pad.r);const getY=v=>pad.t+(1-clamp(v,0,ymax)/ymax)*(H-pad.t-pad.b);
+ x.beginPath();x.strokeStyle=color;x.lineWidth=2.3;dat.forEach((v,i)=>{let X=getX(v.gen),Y=getY(v[key]);if(i===0)x.moveTo(X,Y);else x.lineTo(X,Y)});x.stroke();x.fillStyle='#aabfce';x.fillText(String(first),pad.l,H-6);x.fillText(String(last),W-pad.r-25,H-6);
+}
+function drawCircuit(s){const rates=[s.sensor,s.loop,s.output],ids=['sensWire','loopWire','outWire'];ids.forEach((id,i)=>{const e=$(id);e.style.stroke=rates[i]>.15?'#73e5bb':'#42596d';e.style.opacity=String(Math.max(.22,rates[i]));});$('connText').textContent=`${(s.complete*100).toFixed(1)}% of agents carry all three structural connections`;}
+function render(){const s=model.stats();$('gen').textContent=s.generations.toLocaleString();$('accuracy').textContent=s.generations?(s.accuracy*100).toFixed(1)+'%':'—';$('complete').textContent=(s.complete*100).toFixed(1)+'%';$('useful').textContent=(s.useful*100).toFixed(1)+'%';$('sensorStat').textContent=(s.sensor*100).toFixed(0)+'%';$('loopStat').textContent=(s.loop*100).toFixed(0)+'%';$('outputStat').textContent=(s.output*100).toFixed(0)+'%';$('late').textContent=s.lateAccuracy==null?'Run 40 or more generations to compare results.':`Average correct choices, last ${Math.min(40,s.generations)} generations: ${(s.lateAccuracy*100).toFixed(1)}%.`;
+ drawField();drawCircuit(s);chart('performance','accuracy','#73e5bb');chart('structural','complete','#f8cc80');
+ const interpretations={evolve:'New connections can emerge through mutation. An entire functioning circuit can be favored if it reliably converts early cues into later correct choices.',locked:'No new structural connections can arise. Agents begin without a memory route and decisions should remain near chance.',scrambled:'A warning no longer predicts danger. Maintaining a full memory circuit carries a small cost without a compensating benefit.',no_loop:'Feedback is disabled even if structural connections are present. Information cannot persist across the three-step delay.',nonheritable:'Every generation is reconstructed from memoryless starting genomes rather than the genomes of selected parents.'};$('interpret').textContent=interpretations[s.mode]; }
+function stop(){playing=false;if(handle!==null)cancelAnimationFrame(handle);handle=null;$('play').textContent='▶ Evolve';}
+function rebuild(){stop();model=new EmergenceWorld(Number($('seed').value)||42,$('mode').value);render();$('notice').textContent='Restarted with all agents missing the three memory connections.';}
+function advance(n){stop();model.run(n);render();$('notice').textContent=`Advanced ${n} generations.`;}
+function tickAnim(){if(!playing)return;model.run(Number($('speed').value));render();handle=requestAnimationFrame(tickAnim);}
+$('play').addEventListener('click',()=>{if(playing){stop();return;}playing=true;$('play').textContent='Ⅱ Pause';$('notice').textContent='Evolution running.';handle=requestAnimationFrame(tickAnim)});
+$('step1').addEventListener('click',()=>advance(1));$('step50').addEventListener('click',()=>advance(50));$('step400').addEventListener('click',()=>advance(400));$('reset').addEventListener('click',rebuild);$('mode').addEventListener('change',rebuild);$('seed').addEventListener('change',rebuild);
+$('export').addEventListener('click',()=>{const columns=['gen','accuracy','complete','useful','sensor','loop','output','wires','retention'];let csv=columns.join(',')+'\n'+model.history.map(r=>columns.map(k=>r[k]).join(',')).join('\n');const u=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));const a=document.createElement('a');a.href=u;a.download=`exp03_${model.mode}_seed${model.seed}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(u),3000);$('notice').textContent='Exported current run as CSV.';});
+window.getStats=()=>model.stats();window.runBatch=(seed,mode,generations)=>new EmergenceWorld(seed,mode).run(generations).stats();window.EmergenceWorld=EmergenceWorld;render();
+</script></body></html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emergence Lab — An Evolutionary World</title>
+<style>
+:root{color-scheme:dark;--ink:#e6edf5;--muted:#a5b4c6;--panel:#111e2c;--edge:#304257;--accent:#70dfc8;--danger:#ff8e83;--food:#b7e67c;--bg:#09111a}*{box-sizing:border-box}body{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:radial-gradient(ellipse at 5% -5%,#1e4050 0%,transparent 42%),var(--bg);color:var(--ink);margin:0;min-height:100vh}main{max-width:1260px;margin:auto;padding:24px 22px 36px}header{display:flex;align-items:start;justify-content:space-between;gap:25px;margin-bottom:20px}h1{font-size:clamp(26px,4vw,42px);line-height:1.08;letter-spacing:-.04em;margin:8px 0}p{line-height:1.5}.eyebrow{font-size:12px;letter-spacing:.14em;font-weight:800;text-transform:uppercase;color:var(--accent)}.lede{max-width:780px;color:var(--muted);margin:0}.tag{white-space:nowrap;border:1px solid var(--edge);color:var(--muted);border-radius:999px;padding:8px 12px;font-size:12px}.layout{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(280px,1fr);gap:16px}.panel{background:linear-gradient(145deg,#142331,#0f1b28);border:1px solid var(--edge);border-radius:15px;padding:15px;box-shadow:0 15px 40px #0002}.panel h2{font-size:15px;letter-spacing:-.02em;margin:0 0 12px}.canvasbox{background:#071219;padding:5px;border-radius:8px;border:1px solid #273948;overflow:hidden}.canvasbox canvas{display:block;width:100%;height:auto;image-rendering:pixelated}.legend{display:flex;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin:11px 0}.dot{width:9px;height:9px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:5px}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}.stat{border:1px solid var(--edge);border-radius:10px;padding:11px;background:#0b1825}.stat .number{font-size:27px;font-weight:760;font-variant-numeric:tabular-nums;letter-spacing:-.035em}.stat .caption{font-size:11px;color:var(--muted);margin-top:4px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.btn{appearance:none;background:#1d3140;color:var(--ink);font-weight:650;border:1px solid #3c5a6c;border-radius:9px;padding:10px 14px;cursor:pointer;font-size:13px}.btn.primary{background:var(--accent);border-color:var(--accent);color:#09221f}.btn:hover{filter:brightness(1.15)}.btn:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid white;outline-offset:2px}label{font-size:12px;color:var(--muted);font-weight:600;display:grid;gap:6px;flex:1;min-width:130px}input,select{width:100%;background:#0a1620;color:var(--ink);border:1px solid #3c5a6c;border-radius:9px;padding:10px;font:inherit;font-size:13px}.chart{width:100%;height:195px;display:block}.fine{font-size:12px;color:var(--muted);line-height:1.55}.explain{margin-top:17px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.explain b{color:var(--ink)}.explainer{font-size:13px;color:var(--muted);line-height:1.6}.smallcap{font-size:11px;letter-spacing:.1em;color:var(--accent);font-weight:800;text-transform:uppercase}#notice{font-size:12px;color:var(--accent);min-height:18px}.muted{color:var(--muted)}.chartkey{font-size:11px;color:var(--muted)}@media(max-width:920px){.layout{grid-template-columns:1fr}.explain{grid-template-columns:1fr}}@media(max-width:500px){main{padding:15px 12px 30px}.tag{display:none}.panel{padding:11px}.controls .btn{flex:1}.stats .number{font-size:23px}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="eyebrow">EVOLUTION &amp; THE ORIGIN OF COMPLEXITY · EXPERIMENT 01</div><h1>Emergence Lab</h1><p class="lede">A miniature world where agents inherit simple decision weights, gather energy, encounter hazards, and reproduce with mutation. Does natural selection produce adaptive behavior without anybody programming a desire to survive?</p></div><div class="tag">Not a consciousness detector</div></header>
+<div class="layout">
+<section class="panel"><h2>The world</h2><div class="canvasbox"><canvas id="world" width="792" height="504" aria-label="Simulation: moving cyan agents on a world with green energy sources and red hazards"></canvas></div><div class="legend"><span><i class="dot" style="background:#70dfc8"></i>Agents</span><span><i class="dot" style="background:#b7e67c"></i>Food</span><span><i class="dot" style="background:#e46f69"></i>Hazard</span><span><i class="dot" style="background:#304356"></i>Empty</span></div>
+<div class="controls"><button class="btn primary" id="toggle">▶ Start</button><button class="btn" id="s100">+100 steps</button><button class="btn" id="s1000">+1,000 steps</button><button class="btn" id="reset">↺ Reset</button></div>
+<div class="row"><label>Experiment mode<select id="mode"><option value="evolve">Mutation + inheritance</option><option value="random">Non-heritable control</option><option value="blind">No food/hazard sensing</option><option value="memoryless">No movement/reward memory</option></select></label><label>Random seed<input type="number" id="seed" value="42" min="1" max="2147483647"></label><label>Speed<select id="speed"><option value="1">1 step/frame</option><option value="4" selected>4 steps/frame</option><option value="15">15 steps/frame</option><option value="50">50 steps/frame</option></select></label></div>
+<div id="notice" aria-live="polite"></div><p class="fine">All agents follow the same movement algorithm. The four numbers controlling attraction to food, response to danger, persistence, and last successful direction start random. Offspring inherit their parent's numbers with possible mutation. The control assigns newborns fresh random numbers instead. “Blind” agents cannot read nearby food or hazard cues. The memoryless control removes the influence of recent direction and reward history.</p>
+</section>
+<aside class="panel"><h2>Live measurements</h2><div class="stats"><div class="stat"><div class="number" id="generation">0</div><div class="caption">Time steps</div></div><div class="stat"><div class="number" id="population">0</div><div class="caption">Living agents</div></div><div class="stat"><div class="number" id="born">0</div><div class="caption">Offspring born</div></div><div class="stat"><div class="number" id="eaten">0</div><div class="caption">Food collected</div></div></div>
+<h2>Population through time</h2><canvas class="chart" id="popChart" width="450" height="190"></canvas><div class="chartkey">Cyan line = living population · dark line = time axis</div>
+<h2 style="margin-top:16px">Average inherited decision weights</h2><canvas class="chart" id="geneChart" width="450" height="190"></canvas><div class="chartkey"><span style="color:#b7e67c">■</span> Food preference · <span style="color:#ff8e83">■</span> Hazard weight (negative = avoidance) · <span style="color:#a6a1ff">■</span> Persistence</div>
+<p class="fine" id="geneReadout">Weights begin random. Evolution can change their averages if they affect reproductive success.</p>
+</aside>
+</div>
+<div class="explain"><div class="panel"><div class="smallcap">What's programmed</div><p class="explainer">Physical rules, local sensing, movement, energy costs, inheritance, and reproduction. The agents have an explicitly designed internal state (recent movement/reward). <b>We do not pretend memory appears from nothing.</b></p></div><div class="panel"><div class="smallcap">What's selected</div><p class="explainer">The genome weights are randomized rather than set to “seek food” or “avoid danger.” If variants with particular weights leave more descendants, the population's weights can drift toward those variants.</p></div><div class="panel"><div class="smallcap">What isn't measured</div><p class="explainer"><b>Subjective experience.</b> The model tests a pathway toward adaptive sensing, not whether a simulated organism feels anything. Complex behaviors do not, by themselves, demonstrate consciousness.</p></div></div>
+</main>
+<script>
+'use strict';
+class RNG{
+ constructor(seed){this.s=(Number(seed)>>>0)||42;}
+ next(){this.s=(Math.imul(1664525,this.s)+1013904223)>>>0;return this.s/4294967296;}
+ int(n){return Math.floor(this.next()*n)}
+ range(a,b){return a+(b-a)*this.next()}
+}
+const W=66,H=42,N=W*H,DIR=[[0,-1],[1,0],[0,1],[-1,0]],MAX_AGENTS=900;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+class World{
+ constructor(seed=42,mode='evolve'){this.seed=seed;this.mode=mode;this.rng=new RNG(seed);this.t=0;this.births=0;this.foodCollected=0;this.hazardHits=0;this.deaths=0;this.history=[];this.hazards=new Uint8Array(N);this.food=new Uint8Array(N);this.fertility=new Float32Array(N);this.agents=[];this.buildMap();for(let i=0;i<100;i++)this.agents.push(this.makeAgent(null));this.record();}
+ loc(x,y){return ((y+H)%H)*W+((x+W)%W);}
+ buildMap(){let patches=[];for(let i=0;i<12;i++)patches.push([this.rng.int(W),this.rng.int(H),this.rng.range(2,4)]);let gardens=[];for(let i=0;i<9;i++)gardens.push([this.rng.int(W),this.rng.int(H),this.rng.range(4,11)]);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+   let i=this.loc(x,y),danger=0,fert=.1;
+   for(const [gx,gy,r] of gardens){let dx=Math.min(Math.abs(x-gx),W-Math.abs(x-gx)),dy=Math.min(Math.abs(y-gy),H-Math.abs(y-gy));fert+=Math.exp(-(dx*dx+dy*dy)/(2*r*r))*.45;}
+   this.fertility[i]=clamp(fert,.1,1);
+   for(const [px,py,r] of patches){let dx=Math.min(Math.abs(x-px),W-Math.abs(x-px)),dy=Math.min(Math.abs(y-py),H-Math.abs(y-py));if(dx*dx+dy*dy<r*r)danger=1;}
+   this.hazards[i]=danger;
+   if(!danger&&this.rng.next()<this.fertility[i]*.4)this.food[i]=1;
+  }
+ }
+ randomGene(){return [this.rng.range(-2,2),this.rng.range(-2,2),this.rng.range(-1.5,1.5),this.rng.range(-1.5,1.5)];}
+ makeAgent(parent){let genes;
+  if(parent&&this.mode!=='random'){
+   genes=parent.g.slice();if(this.mode==='evolve'||this.mode==='blind'||this.mode==='memoryless')for(let i=0;i<genes.length;i++)if(this.rng.next()<.2)genes[i]=clamp(genes[i]+this.rng.range(-.9,.9),-3,3);
+  }else genes=this.randomGene();
+  const x=parent?parent.x:this.rng.int(W),y=parent?parent.y:this.rng.int(H);
+  return{x,y,g:genes,e:parent?35:48,age:0,dir:this.rng.int(4),rewardDir:-1,rewardTTL:0};
+ }
+ tick(){this.t++;const rng=this.rng;
+  for(let i=0;i<N;i++){if(!this.hazards[i]&&!this.food[i]&&rng.next()<(.002+.05*this.fertility[i]))this.food[i]=1;}
+  const survivors=[],babies=[];
+  for(const a of this.agents){
+   const scores=[];for(let d=0;d<4;d++){
+    const nx=(a.x+DIR[d][0]+W)%W,ny=(a.y+DIR[d][1]+H)%H,i=ny*W+nx;
+    const sensed=this.mode!=='blind';
+    scores.push((sensed&&this.food[i]?a.g[0]*2.7:0)+(sensed&&this.hazards[i]?a.g[1]*2.7:0)+(this.mode!=='memoryless'&&a.dir===d?a.g[2]:0)+(this.mode!=='memoryless'&&a.rewardTTL>0&&a.rewardDir===d?a.g[3]:0)+rng.range(-1.6,1.6));
+   }
+   let best=0;for(let d=1;d<4;d++)if(scores[d]>scores[best])best=d;
+   a.dir=best;a.x=(a.x+DIR[best][0]+W)%W;a.y=(a.y+DIR[best][1]+H)%H;
+   const idx=a.y*W+a.x;
+   a.e-=1.3;a.age++;
+   if(this.food[idx]){this.food[idx]=0;a.e+=9.2;a.rewardDir=best;a.rewardTTL=5;this.foodCollected++;}else if(a.rewardTTL>0)a.rewardTTL--;
+   if(this.hazards[idx]){a.e-=12;this.hazardHits++;}
+   if(a.e>82&&a.age>=12&&survivors.length+babies.length<MAX_AGENTS){a.e-=48;babies.push(this.makeAgent(a));this.births++;}
+   if(a.e>0&&a.age<220)survivors.push(a);else this.deaths++;
+  }
+  this.agents=survivors.concat(babies);
+  if(this.t%10===0)this.record();
+ }
+ record(){let n=this.agents.length,s=[0,0,0,0];for(const a of this.agents)for(let i=0;i<4;i++)s[i]+=a.g[i];this.history.push({t:this.t,n,g:n?s.map(x=>x/n):[0,0,0,0],births:this.births,food:this.foodCollected,danger:this.hazardHits});if(this.history.length>1300)this.history.shift();}
+ run(steps){for(let i=0;i<steps;i++)this.tick();this.record();return this;}
+ stats(){let n=this.agents.length,s=[0,0,0,0];for(const a of this.agents)for(let i=0;i<4;i++)s[i]+=a.g[i];return{seed:this.seed,mode:this.mode,steps:this.t,population:n,births:this.births,deaths:this.deaths,foodCollected:this.foodCollected,hazardHits:this.hazardHits,meanGenes:n?s.map(x=>x/n):[null,null,null,null],history:this.history};}
+}
+const worldCanvas=document.getElementById('world'),ctx=worldCanvas.getContext('2d'),popCanvas=document.getElementById('popChart'),geneCanvas=document.getElementById('geneChart');let world=new World(42,'evolve'),playing=false,frameReq=null;
+function rectCell(x,y,color){ctx.fillStyle=color;ctx.fillRect(x*12,y*12,11,11);}
+function drawWorld(){ctx.fillStyle='#0b1a25';ctx.fillRect(0,0,792,504);for(let y=0;y<H;y++)for(let x=0;x<W;x++){let i=y*W+x;if(world.hazards[i])rectCell(x,y,'#9d484b');else if(world.food[i])rectCell(x,y,'#92bf65');else if(world.fertility[i]>.6)rectCell(x,y,'#142a2c');else rectCell(x,y,'#172332');}for(const a of world.agents){ctx.fillStyle='#70dfc8';ctx.fillRect(a.x*12+2,a.y*12+2,8,8);}}
+function lineChart(canvas,series,yMin,yMax){const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height,p={left:34,right:12,top:9,bottom:22};c.clearRect(0,0,w,h);c.strokeStyle='#314454';c.fillStyle='#98a9ba';c.font='11px system-ui';for(let i=0;i<=4;i++){const y=p.top+(h-p.top-p.bottom)*i/4,val=yMax-(yMax-yMin)*i/4;c.beginPath();c.moveTo(p.left,y);c.lineTo(w-p.right,y);c.stroke();c.fillText(val.toFixed(Math.abs(yMax-yMin)<10?1:0),2,y+4);}const xmin=world.history[0].t,xmax=Math.max(xmin+1,world.history[world.history.length-1].t);for(const s of series){c.strokeStyle=s.color;c.lineWidth=2;c.beginPath();let first=true;for(const item of world.history){const v=s.val(item);if(v==null)continue;let x=p.left+(w-p.right-p.left)*(item.t-xmin)/(xmax-xmin),y=p.top+(h-p.top-p.bottom)*(1-(v-yMin)/(yMax-yMin));y=clamp(y,p.top,h-p.bottom);if(first){c.moveTo(x,y);first=false;}else c.lineTo(x,y);}c.stroke();}c.fillStyle='#a1afbd';c.fillText(String(xmin),p.left,h-4);c.fillText(String(xmax),w-p.right-35,h-4);}
+function render(){drawWorld();document.getElementById('generation').textContent=world.t.toLocaleString();document.getElementById('population').textContent=world.agents.length.toLocaleString();document.getElementById('born').textContent=world.births.toLocaleString();document.getElementById('eaten').textContent=world.foodCollected.toLocaleString();let maxPop=Math.max(100,...world.history.map(h=>h.n));lineChart(popCanvas,[{color:'#70dfc8',val:h=>h.n}],0,Math.ceil(maxPop/50)*50);lineChart(geneCanvas,[{color:'#b7e67c',val:h=>h.g[0]},{color:'#ff8e83',val:h=>h.g[1]},{color:'#a6a1ff',val:h=>h.g[2]}],-3,3);let s=world.stats();document.getElementById('geneReadout').textContent=s.population?`Food ${s.meanGenes[0].toFixed(2)} · Hazard ${s.meanGenes[1].toFixed(2)} · Persistence ${s.meanGenes[2].toFixed(2)} · Reward memory ${s.meanGenes[3].toFixed(2)}. Negative hazard weight means avoidance.`:'The population is extinct. Reset with another seed, or compare control conditions.';}
+function say(s){document.getElementById('notice').textContent=s;}
+function reset(){playing=false;cancelAnimationFrame(frameReq);document.getElementById('toggle').textContent='▶ Start';world=new World(Number(document.getElementById('seed').value)||42,document.getElementById('mode').value);render();say('World reset; agents begin with random decision weights.');}
+function advance(steps){world.run(steps);render();if(world.agents.length===0){playing=false;document.getElementById('toggle').textContent='▶ Start';say('Population extinct. Try another seed or condition.');}}
+function loop(){if(!playing)return;for(let i=0;i<Number(document.getElementById('speed').value);i++)world.tick();if(world.t%8===0||Number(document.getElementById('speed').value)>8)render();if(world.agents.length===0){playing=false;document.getElementById('toggle').textContent='▶ Start';say('Population extinct.');return;}frameReq=requestAnimationFrame(loop);}
+document.getElementById('toggle').onclick=()=>{playing=!playing;document.getElementById('toggle').textContent=playing?'❚❚ Pause':'▶ Start';if(playing){say('Simulation running.');frameReq=requestAnimationFrame(loop)}else{cancelAnimationFrame(frameReq);render();}};
+document.getElementById('s100').onclick=()=>{playing=false;document.getElementById('toggle').textContent='▶ Start';advance(100)};
+document.getElementById('s1000').onclick=()=>{playing=false;document.getElementById('toggle').textContent='▶ Start';advance(1000)};
+document.getElementById('reset').onclick=reset;document.getElementById('mode').onchange=reset;document.getElementById('seed').onchange=reset;
+window.EvolutionWorld=World;window.getWorldStats=()=>world.stats();window.runBatch=(seed,mode,steps)=>new World(seed,mode).run(steps).stats();render();
+</script></body></html>

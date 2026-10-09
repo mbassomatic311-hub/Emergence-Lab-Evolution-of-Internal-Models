@@ -1,0 +1,33 @@
+from playwright.sync_api import sync_playwright
+import json,time
+P='/mnt/data/consciousness_lab/experiment_03_emergent_memory.html'
+with sync_playwright() as p:
+ b=p.chromium.launch(headless=True, executable_path='/usr/bin/chromium',args=['--no-sandbox'])
+ pg=b.new_page(viewport={'width':1365,'height':1000},accept_downloads=True)
+ errors=[];pg.on('pageerror',lambda e:errors.append(str(e)))
+ pg.set_content(open(P).read(), wait_until='load')
+ pg.wait_for_function('window.runBatch !== undefined')
+ print('INITIAL',pg.evaluate('getStats()'))
+ pg.locator('#step50').click()
+ print('AFTER_50',pg.evaluate('getStats().generations'))
+ pg.locator('#step400').click()
+ print('AFTER_450',pg.evaluate('({accuracy:getStats().accuracy, complete:getStats().complete, useful:getStats().useful})'))
+ pg.screenshot(path='/mnt/data/consciousness_lab/experiment_03_preview.png',full_page=True)
+ pg.locator('#mode').select_option('locked')
+ print('SWITCH',pg.evaluate('({mode:getStats().mode,gen:getStats().generations,complete:getStats().complete})'))
+ pg.locator('#step50').click()
+ print('LOCKED_50',pg.evaluate('getStats().accuracy'))
+ pg.locator('#reset').click();print('RESET',pg.evaluate('getStats().generations'))
+ pg.locator('#mode').select_option('evolve');pg.locator('#step50').click()
+ with pg.expect_download() as dl: pg.locator('#export').click()
+ download=dl.value;print('DOWNLOAD',download.suggested_filename)
+ pg.locator('#play').click();pg.wait_for_timeout(550);pg.locator('#play').click();print('PLAY_PAUSE',pg.evaluate('getStats().generations'))
+ mobile=b.new_page(viewport={'width':390,'height':844},device_scale_factor=1)
+ mobile.on('pageerror',lambda e:errors.append('mobile: '+str(e)))
+ mobile.set_content(open(P).read(), wait_until='load');mobile.locator('#step50').click()
+ print('MOBILE_HSCROLL',mobile.evaluate('document.documentElement.scrollWidth > window.innerWidth'))
+ mobile.screenshot(path='/mnt/data/consciousness_lab/experiment_03_mobile.png',full_page=True)
+ print('JS_ERRORS',errors)
+ assert not errors
+ assert not mobile.evaluate('document.documentElement.scrollWidth > window.innerWidth')
+ b.close()

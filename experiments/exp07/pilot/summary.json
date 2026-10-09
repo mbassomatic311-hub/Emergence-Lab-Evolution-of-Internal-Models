@@ -1,0 +1,75 @@
+{
+  "n_seeds": 2,
+  "conditions": {
+    "full": {
+      "stable_food": 4.455729166666666,
+      "reversal_food": 2.4453125,
+      "stable_survival": 0.7817708333333333,
+      "reversal_survival": 0.7853841145833333,
+      "development_food": 5.973958333333334
+    },
+    "reactive": {
+      "stable_food": 4.0703125,
+      "reversal_food": 1.9700520833333335,
+      "stable_survival": 0.7415364583333333,
+      "reversal_survival": 0.7421875,
+      "development_food": 6.223958333333333
+    },
+    "random_selection": {
+      "stable_food": 2.3470052083333335,
+      "reversal_food": 1.5826822916666665,
+      "stable_survival": 0.7124999999999999,
+      "reversal_survival": 0.7265625,
+      "development_food": 3.03125
+    },
+    "no_inheritance": {
+      "stable_food": 3.556640625,
+      "reversal_food": 2.23046875,
+      "stable_survival": 0.7776692708333334,
+      "reversal_survival": 0.7863118489583334,
+      "development_food": 3.869791666666667
+    }
+  },
+  "paired_differences": {
+    "full_minus_reactive": {
+      "mean": 0.47526041666666663,
+      "ci95": [
+        0.07552083333333348,
+        0.8749999999999998
+      ],
+      "positive": 2,
+      "negative": 0,
+      "zero": 0
+    },
+    "full_minus_random_selection": {
+      "mean": 0.8626302083333334,
+      "ci95": [
+        0.6341145833333335,
+        1.0911458333333333
+      ],
+      "positive": 2,
+      "negative": 0,
+      "zero": 0
+    },
+    "full_minus_no_inheritance": {
+      "mean": 0.2148437500000001,
+      "ci95": [
+        -0.45833333333333304,
+        0.8880208333333333
+      ],
+      "positive": 1,
+      "negative": 1,
+      "zero": 0
+    },
+    "full_minus_scrambled": {
+      "mean": 0.8463541666666666,
+      "ci95": [
+        0.10807291666666674,
+        1.5846354166666665
+      ],
+      "positive": 2,
+      "negative": 0,
+      "zero": 0
+    }
+  }
+}

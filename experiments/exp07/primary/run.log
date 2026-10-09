@@ -1,0 +1,83 @@
+seeds completed: 4/32
+seeds completed: 8/32
+seeds completed: 12/32
+seeds completed: 16/32
+seeds completed: 20/32
+seeds completed: 24/32
+seeds completed: 28/32
+seeds completed: 32/32
+{
+  "n_seeds": 32,
+  "conditions": {
+    "full": {
+      "stable_food": 6.474812825520833,
+      "reversal_food": 5.072347005208333,
+      "stable_survival": 0.8972869873046875,
+      "reversal_survival": 0.8989400227864583,
+      "development_food": 7.431640625
+    },
+    "reactive": {
+      "stable_food": 4.206990559895833,
+      "reversal_food": 2.0340169270833335,
+      "stable_survival": 0.7480875651041667,
+      "reversal_survival": 0.7507120768229166,
+      "development_food": 6.056315104166666
+    },
+    "random_selection": {
+      "stable_food": 3.174519856770833,
+      "reversal_food": 1.9383544921875,
+      "stable_survival": 0.7547678629557292,
+      "reversal_survival": 0.7566335042317708,
+      "development_food": 3.6767578125
+    },
+    "no_inheritance": {
+      "stable_food": 3.4988606770833335,
+      "reversal_food": 2.0383707682291665,
+      "stable_survival": 0.7650319417317708,
+      "reversal_survival": 0.7683451334635416,
+      "development_food": 3.877604166666666
+    }
+  },
+  "paired_differences": {
+    "full_minus_reactive": {
+      "mean": 3.038330078125,
+      "ci95": [
+        2.1995758056640624,
+        3.891443888346354
+      ],
+      "positive": 25,
+      "negative": 7,
+      "zero": 0
+    },
+    "full_minus_random_selection": {
+      "mean": 3.133992513020833,
+      "ci95": [
+        2.2428304036458337,
+        3.9928405761718753
+      ],
+      "positive": 28,
+      "negative": 4,
+      "zero": 0
+    },
+    "full_minus_no_inheritance": {
+      "mean": 3.033976236979167,
+      "ci95": [
+        2.1517700195312504,
+        3.8795196533203127
+      ],
+      "positive": 30,
+      "negative": 2,
+      "zero": 0
+    },
+    "full_minus_scrambled": {
+      "mean": 3.740559895833333,
+      "ci95": [
+        2.7433044433593747,
+        4.722048950195313
+      ],
+      "positive": 30,
+      "negative": 2,
+      "zero": 0
+    }
+  }
+}
