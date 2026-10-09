@@ -1,0 +1,23 @@
+{
+  "status": "DEVELOPMENT ONLY; privileged ceiling is not a fair information-matched baseline",
+  "n_population_seeds": 3,
+  "episodes_per_population": 12,
+  "mean_food": {
+    "greedy": {
+      "stable": 1.0833333333333333,
+      "shift+dropout": 0.6388888888888888
+    },
+    "comparator": {
+      "stable": 4.166666666666667,
+      "shift+dropout": 3.0555555555555554
+    },
+    "bayesian": {
+      "stable": 3.5833333333333335,
+      "shift+dropout": 3.4166666666666665
+    },
+    "privileged_pathfinding_reference": {
+      "stable": 7.444444444444445,
+      "shift+dropout": 7.444444444444445
+    }
+  }
+}

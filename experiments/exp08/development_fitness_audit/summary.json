@@ -1,0 +1,21 @@
+{
+  "status": "development-only exploratory audit; not preregistered",
+  "seeds": [
+    1103,
+    1205,
+    1411
+  ],
+  "population": 18,
+  "generations": 14,
+  "fitness_episodes": 2,
+  "high_eval": 16,
+  "mean_food_by_environment": {
+    "stable": 0.13888888888888887,
+    "shift+dropout": 0.1111111111111111
+  },
+  "noise_diagnostics": {
+    "mean_rank_corr_original": 0.5195656215601596,
+    "mean_rank_corr_common": 0.38615481011890185,
+    "mean_original_zero_food_proxy_fraction": 0.8333333333333334
+  }
+}
