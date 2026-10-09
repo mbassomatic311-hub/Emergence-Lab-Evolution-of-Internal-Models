@@ -1,0 +1,136 @@
+{
+  "caveats": "Stimulus intensity adjusted by adaptive staircase; past choices are correlated with experimental stimulus adjustments. Predictive association is not a causal memory effect. Catch flags inferred from behavioral SDT coding. Model hyperparameters and design not preregistered.",
+  "contrasts": [
+    {
+      "average_participant_difference": -0.03823202187887208,
+      "comparison": "stimulus_logloss minus constant_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0748971666494216,
+        0.007406687652345699
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.016019338395910868,
+      "comparison": "stimulus_history_logloss minus stimulus_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.05998581059513044,
+        0.034057102504605426
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.06943512441409513,
+      "comparison": "stimulus_history_logloss minus stimulus_time_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.11852010796771982,
+        -0.029809576176237418
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.031096895613798033,
+      "comparison": "stimulus_past_logloss minus stimulus_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.05916909572700714,
+        -0.005329070235622252
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": 0.0014609974142249516,
+      "comparison": "past_shuffled_time_preserved_logloss minus stimulus_time_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.013604965116051066,
+        0.021876131394919708
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.003905854830732599,
+      "comparison": "history_shuffled_logloss minus stimulus_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.01995366201568897,
+        0.013797056314755205
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.0006371037000636066,
+      "comparison": "stimulus_confidence_mse minus constant_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0014067216216517684,
+        -2.382996820320679e-05
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.0012649732812064778,
+      "comparison": "stimulus_history_confidence_mse minus stimulus_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0021948940612914643,
+        -0.0004132048108172948
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.0013963385688568152,
+      "comparison": "stimulus_history_confidence_mse minus stimulus_time_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0032366943527985447,
+        -0.00026433381910912477
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.0011309212012690071,
+      "comparison": "stimulus_past_confidence_mse minus stimulus_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0018490249042905484,
+        -0.0004805475704654547
+      ],
+      "number_of_independent_participants": 18
+    }
+  ],
+  "mean_per_participant": {
+    "constant_brier": 0.23439448930741177,
+    "constant_confidence_mse": 0.017940220670920545,
+    "constant_logloss": 0.661522264905562,
+    "heldout_accuracy": 0.5467642075612164,
+    "heldout_mean_confidence": 0.8229519379253832,
+    "heldout_report_yes_rate": 0.3729475212474162,
+    "history_shuffled_brier": 0.2168315890061802,
+    "history_shuffled_logloss": 0.6193843881959575,
+    "past_shuffled_time_preserved_brier": 0.2389606266883808,
+    "past_shuffled_time_preserved_logloss": 0.6781670264590992,
+    "stimulus_brier": 0.22039354368313824,
+    "stimulus_confidence_mse": 0.01730311697085694,
+    "stimulus_history_brier": 0.21157032580324853,
+    "stimulus_history_confidence_mse": 0.016038143689650463,
+    "stimulus_history_logloss": 0.6072709046307792,
+    "stimulus_logloss": 0.6232902430266899,
+    "stimulus_past_brier": 0.20490126726754268,
+    "stimulus_past_confidence_mse": 0.016172195769587932,
+    "stimulus_past_logloss": 0.5921933474128919,
+    "stimulus_time_brier": 0.2406901885588718,
+    "stimulus_time_confidence_mse": 0.017434482258507272,
+    "stimulus_time_logloss": 0.6767060290448741
+  },
+  "n_heldout_trials": 3032,
+  "n_independent_participants": 18,
+  "n_training_trials": 5630,
+  "research_status": "EXPLORATORY human behavior only; NO EEG analyzed; not consciousness measurement",
+  "source": "OpenNeuro ds001785 v1.1.1 public task event tables",
+  "train_test": "within participant earliest 65% starts trained, latest 35% untouched test",
+  "upstream_commit": "53be0167e7068aba693d57923eb4c9c037878159"
+}

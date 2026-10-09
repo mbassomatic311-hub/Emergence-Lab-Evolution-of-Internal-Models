@@ -1,0 +1,60 @@
+{
+  "contrasts": [
+    {
+      "average_participant_difference": -0.011522155379826069,
+      "comparison": "staircase_plus_reports_logloss minus staircase_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.03565648570847653,
+        0.008283158933754793
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.001204822159767653,
+      "comparison": "staircase_plus_reports_confidence_mse minus staircase_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.0019896547955802926,
+        -0.0005564366824588423
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": 0.03327261410014252,
+      "comparison": "staircase_plus_reports_and_time_logloss minus staircase_logloss (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.03035220169347062,
+        0.11297287767176672
+      ],
+      "number_of_independent_participants": 18
+    },
+    {
+      "average_participant_difference": -0.0014482650432537767,
+      "comparison": "staircase_plus_reports_and_time_confidence_mse minus staircase_confidence_mse (lower is better)",
+      "confirmatory": false,
+      "descriptive_95pct_bootstrap": [
+        -0.002552890896857479,
+        -0.0005535127430696487
+      ],
+      "number_of_independent_participants": 18
+    }
+  ],
+  "independent_participants": 18,
+  "limitations": "Staircase and preceding reports are endogenous; this observational control cannot identify causal history effects. Hyperparameters and model selection were not prospectively registered.",
+  "mean_per_participant": {
+    "physical_confidence_mse": 0.01730311697085694,
+    "physical_logloss": 0.6232902430266899,
+    "staircase_confidence_mse": 0.018229020778269173,
+    "staircase_logloss": 0.619480048796992,
+    "staircase_plus_reports_and_time_confidence_mse": 0.016780755735015397,
+    "staircase_plus_reports_and_time_logloss": 0.6527526628971345,
+    "staircase_plus_reports_confidence_mse": 0.017024198618501518,
+    "staircase_plus_reports_logloss": 0.6079578934171659
+  },
+  "n_heldout_trials": 3032,
+  "n_training_trials": 5630,
+  "research_status": "EXPLORATORY behavioral-only staircase control; NO EEG and no consciousness measurement",
+  "source": "OpenNeuro ds001785 v1.1.1"
+}

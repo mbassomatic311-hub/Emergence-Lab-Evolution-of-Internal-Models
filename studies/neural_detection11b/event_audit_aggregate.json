@@ -1,0 +1,24 @@
+{
+  "confidence_present": 8689,
+  "data_examined": "public BIDS event metadata only; no EEG data or human-level predictors",
+  "extra_non_task_markers": 61,
+  "missing_confidence": 1,
+  "nominal_window_not_eeg_verified": true,
+  "outcome_complete": 8662,
+  "participants_in_public_tsv": 18,
+  "participants_with_500_starts": 16,
+  "participants_with_fewer_starts": 2,
+  "range_starts_per_participant": [
+    250,
+    500
+  ],
+  "source_doi": "10.18112/openneuro.ds001785.v1.1.1",
+  "starts": 8690,
+  "study_status": "EXPLORATORY PRE-FLIGHT; NO EEG RESULT OR CONSCIOUSNESS MEASUREMENT",
+  "trial_matching": "detection outcome and confidence are recorded within each event block",
+  "unpaired_or_ambiguous_outcomes": 28,
+  "unsafe_nominal_timing": 1479,
+  "upstream_commit": "53be0167e7068aba693d57923eb4c9c037878159",
+  "usable_nominal_windows": 7211,
+  "valid_joint_labels": 8662
+}

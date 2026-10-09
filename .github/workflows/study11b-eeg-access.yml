@@ -1,0 +1,40 @@
+name: Study 11B bounded public EEG access preflight
+
+on:
+  push:
+    branches: ["research/study11b-tactile-eeg-alignment"]
+    paths:
+      - ".github/workflows/study11b-eeg-access.yml"
+permissions:
+  contents: read
+jobs:
+  access:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect small public EEG data access endpoints without downloading signals
+        run: |
+          python - <<'PY'
+          import json,urllib.request,urllib.error
+          endpoints={
+            "aws_openneuro_s3_eeg_set":"https://s3.amazonaws.com/openneuro.org/ds001785/sub-01/ses-01/eeg/sub-01_ses-01_task-adapt_run-01_eeg.set",
+            "aws_openneuro_s3_eeg_fdt":"https://s3.amazonaws.com/openneuro.org/ds001785/sub-01/ses-01/eeg/sub-01_ses-01_task-adapt_run-01_eeg.fdt",
+            "openneuro_bucket_virtual":"https://openneuro.org.s3.amazonaws.com/ds001785/sub-01/ses-01/eeg/sub-01_ses-01_task-adapt_run-01_eeg.set",
+            "nemar_manifest":"https://data.nemar.org/on001785/v1.1.1/manifest.json",
+            "nemar_abstract":"https://nemar.org/dataset/on001785",
+            "openneuro_metadata":"https://openneuro.org/datasets/ds001785",
+            "s3_bucket_list":"https://openneuro.org.s3.amazonaws.com/?prefix=ds001785%2Fsub-01%2Fses-01%2Feeg%2F&max-keys=10",
+          }
+          res={}
+          for label,url in endpoints.items():
+            req=urllib.request.Request(url,method="HEAD",headers={"User-Agent":"EmergenceLab-public-science-preflight/1.0"})
+            try:
+              with urllib.request.urlopen(req,timeout=13) as r:
+                res[label]={"http":r.status,"length":r.headers.get("content-length"),
+                            "type":r.headers.get("content-type"),"range":r.headers.get("accept-ranges")}
+            except urllib.error.HTTPError as exc:
+              res[label]={"http":exc.code, "error":"HTTP response; no data downloaded"}
+            except Exception as exc:
+              res[label]={"error":str(exc)[:150]}
+          print(json.dumps(res,indent=2))
+          PY
+          echo "End of non-sensitive endpoint feasibility check."
