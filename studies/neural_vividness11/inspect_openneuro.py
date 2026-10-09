@@ -39,13 +39,21 @@ def inspect(out='schema_check.json'):
     blob=request_limited(url)
     if blob.startswith(b'../../.git/annex/'):
         raise ValueError('Received git-annex pointer, not real behavioral bytes')
-    table=pd.read_csv(io.BytesIO(blob))
+    try:
+        decoded=blob.decode('utf-8')
+        encoding='utf-8'
+    except UnicodeDecodeError:
+        # Explicitly record Windows-1252 fallback for old CSV exports.
+        decoded=blob.decode('cp1252')
+        encoding='cp1252'
+    table=pd.read_csv(io.StringIO(decoded))
     if table.empty or len(table.columns)<2:raise ValueError('Unexpected empty or invalid behavioral table')
     report={
       'dataset':'OpenNeuro ds006648 v1.0.0; NEMAR on006648 v1.0.0',
       'status':'REAL PUBLIC BEHAVIORAL SCHEMA INSPECTED; no EEG data, no event/ratings join',
       'source_file':TARGET,
       'source_bytes':len(blob),
+      'source_encoding':encoding,
       'rows':len(table),
       'columns':[str(c) for c in table.columns],
       'dtypes':{str(c):str(t) for c,t in table.dtypes.items()},
