@@ -1,0 +1,114 @@
+name: Import and reproduce Study 10 multimodal compression
+on:
+  push:
+    branches: ["research/study10-multimodal-predictive-compression"]
+    paths: ["STUDY10_GITHUB_TRANSFER.txt"]
+permissions:
+  contents: write
+jobs:
+  study10:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check package digest, files and individual source checksums
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,hashlib,io,lzma,tarfile
+          from pathlib import Path,PurePosixPath
+          text=Path('STUDY10_GITHUB_TRANSFER.txt').read_text().strip()
+          compressed=base64.b64decode(text,validate=True)
+          expected='d0646aa5d46f177e71dc7e077230a13a1e234bd5f458afda4591202fbe6053ec'
+          if hashlib.sha256(compressed).hexdigest()!=expected:
+              raise SystemExit('Compressed research payload SHA256 mismatch')
+          raw=lzma.decompress(compressed,memlimit=256_000_000)
+          if len(raw)>1_000_000:raise SystemExit('Research bundle unexpectedly large')
+          prefix='studies/perceptual_compression10/'
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as tar:
+              members=tar.getmembers()
+              if len(members)!=7 or len({m.name for m in members})!=7:
+                  raise SystemExit('Unexpected number of research source/data files')
+              content={}
+              for m in members:
+                  name=PurePosixPath(m.name)
+                  if (not m.isfile() or m.size>200_000 or name.is_absolute()
+                      or '..' in name.parts or not m.name.startswith(prefix)
+                      or Path(m.name).exists()):
+                      raise SystemExit('Unsafe or overwriting entry: '+m.name)
+                  content[m.name]=tar.extractfile(m).read()
+              checks=content.get(prefix+'SHA256SUMS.txt')
+              if not checks:raise SystemExit('Manifest not found')
+              expected_files={}
+              for line in checks.decode().splitlines():
+                  digest,shortname=line.split('  ',1)
+                  path=prefix+shortname
+                  if path in expected_files or len(digest)!=64:
+                      raise SystemExit('Malformed checksum manifest')
+                  expected_files[path]=digest
+              if set(expected_files)!=set(content)-{prefix+'SHA256SUMS.txt'}:
+                  raise SystemExit('SHA256 manifest file membership mismatch')
+              for name,digest in expected_files.items():
+                  if hashlib.sha256(content[name]).hexdigest()!=digest:
+                      raise SystemExit('Individual source/result SHA256 mismatch: '+name)
+              for name,b in content.items():
+                  dest=Path(name);dest.parent.mkdir(parents=True,exist_ok=True)
+                  dest.write_bytes(b)
+          print('Validated exact seven-file source and exploratory-result package')
+          PY
+      - name: Install pinned dependencies
+        run: python -m pip install -r studies/perceptual_compression10/requirements.txt
+      - name: Execute software tests
+        working-directory: studies/perceptual_compression10
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: python -m unittest -v test_study10.py
+      - name: Repeat all 24 development worlds from source
+        working-directory: studies/perceptual_compression10
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: python study10.py --seeds 24 --out /tmp/study10_reproduction
+      - name: Verify every score and summary within floating-point tolerance
+        working-directory: studies/perceptual_compression10
+        run: |
+          python - <<'PY'
+          import csv,json,math
+          from pathlib import Path
+          a=Path('development');b=Path('/tmp/study10_reproduction')
+          with (a/'per_seed.csv').open(newline='') as f:old=list(csv.DictReader(f))
+          with (b/'per_seed.csv').open(newline='') as f:new=list(csv.DictReader(f))
+          if len(old)!=len(new):raise SystemExit('Row count mismatch')
+          for i,(r,s) in enumerate(zip(old,new)):
+              if r.keys()!=s.keys():raise SystemExit('Column or schema mismatch')
+              for k in r:
+                  if k in ('condition','model'):
+                      if r[k]!=s[k]:raise SystemExit(f'Categorical mismatch row {i} column {k}')
+                  else:
+                      if not math.isclose(float(r[k]),float(s[k]),rel_tol=1e-10,abs_tol=1e-10):
+                          raise SystemExit(f'Numerical mismatch row {i} column {k}')
+          def compare(x,y,loc='summary'):
+              if type(x)!=type(y):raise SystemExit(loc+' type differs')
+              if isinstance(x,dict):
+                  if x.keys()!=y.keys():raise SystemExit(loc+' keys differ')
+                  for k in x:compare(x[k],y[k],loc+'.'+str(k))
+              elif isinstance(x,list):
+                  if len(x)!=len(y):raise SystemExit(loc+' list length differs')
+                  for i,(u,v) in enumerate(zip(x,y)):compare(u,v,loc+str(i))
+              elif isinstance(x,(int,float)):
+                  if not math.isclose(x,y,rel_tol=1e-10,abs_tol=1e-10):
+                      raise SystemExit(loc+' value differs')
+              elif x!=y:raise SystemExit(loc+' text differs')
+          compare(json.loads((a/'summary.json').read_text()),json.loads((b/'summary.json').read_text()))
+          print('PASS: all world-seed results and report reproduced')
+          PY
+      - name: Commit verified source and development data to separate review branch
+        shell: bash
+        run: |
+          rm -f STUDY10_GITHUB_TRANSFER.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Add reproducible Study 10 predictive compression and failure controls'
+          git push origin HEAD:research/study10-multimodal-predictive-compression
