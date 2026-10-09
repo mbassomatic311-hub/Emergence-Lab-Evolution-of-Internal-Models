@@ -1,0 +1,162 @@
+{
+  "status": "POST-HOC DESCRIPTIVE CLUSTER BOOTSTRAP, exploratory only",
+  "unit": "simulated world seed (not timestep, not a biological organism)",
+  "probe_pairs": {
+    "action_model_minus_shuffled_action_pre_mse": {
+      "n_worlds": 144,
+      "mean": -0.7914854750133495,
+      "bootstrap_95": [
+        -0.854524100051355,
+        -0.7296163397145758
+      ],
+      "positive_worlds": 1,
+      "negative_worlds": 143,
+      "ties": 0
+    },
+    "action_model_minus_shuffled_action_post_mse": {
+      "n_worlds": 144,
+      "mean": -0.18691947370983078,
+      "bootstrap_95": [
+        -0.268423377864756,
+        -0.10681943906216923
+      ],
+      "positive_worlds": 54,
+      "negative_worlds": 90,
+      "ties": 0
+    },
+    "action_model_minus_action_blind_pre_mse": {
+      "n_worlds": 144,
+      "mean": -0.9698697776101609,
+      "bootstrap_95": [
+        -1.0190543450554914,
+        -0.9200828862394484
+      ],
+      "positive_worlds": 0,
+      "negative_worlds": 144,
+      "ties": 0
+    },
+    "action_model_minus_action_blind_post_mse": {
+      "n_worlds": 144,
+      "mean": -0.30078858026412447,
+      "bootstrap_95": [
+        -0.35424508544714406,
+        -0.24780820034880274
+      ],
+      "positive_worlds": 30,
+      "negative_worlds": 114,
+      "ties": 0
+    },
+    "action_model_minus_reset_memory_pre_mse": {
+      "n_worlds": 144,
+      "mean": -0.36679056092865986,
+      "bootstrap_95": [
+        -0.39821269925837016,
+        -0.33485190967498224
+      ],
+      "positive_worlds": 9,
+      "negative_worlds": 135,
+      "ties": 0
+    },
+    "action_model_minus_reset_memory_post_mse": {
+      "n_worlds": 144,
+      "mean": 0.3347749472372198,
+      "bootstrap_95": [
+        0.2899309766590897,
+        0.3804081640024889
+      ],
+      "positive_worlds": 133,
+      "negative_worlds": 11,
+      "ties": 0
+    }
+  },
+  "navigation_pairs": {
+    "action_model_minus_greedy_stable_food": {
+      "n_worlds": 144,
+      "mean": 1.3055555555555556,
+      "bootstrap_95": [
+        0.8333333333333334,
+        1.7638888888888888
+      ],
+      "positive_worlds": 88,
+      "negative_worlds": 19,
+      "ties": 37
+    },
+    "action_model_minus_greedy_shift+dropout_food": {
+      "n_worlds": 144,
+      "mean": 0.375,
+      "bootstrap_95": [
+        0.16666666666666666,
+        0.5763888888888888
+      ],
+      "positive_worlds": 68,
+      "negative_worlds": 23,
+      "ties": 53
+    },
+    "action_model_minus_comparator_stable_food": {
+      "n_worlds": 144,
+      "mean": -1.625,
+      "bootstrap_95": [
+        -2.0694444444444446,
+        -1.1736111111111112
+      ],
+      "positive_worlds": 24,
+      "negative_worlds": 94,
+      "ties": 26
+    },
+    "action_model_minus_comparator_shift+dropout_food": {
+      "n_worlds": 144,
+      "mean": -1.8611111111111112,
+      "bootstrap_95": [
+        -2.1458333333333335,
+        -1.5763888888888888
+      ],
+      "positive_worlds": 11,
+      "negative_worlds": 109,
+      "ties": 24
+    },
+    "action_model_minus_bayesian_stable_food": {
+      "n_worlds": 144,
+      "mean": -1.375,
+      "bootstrap_95": [
+        -1.8194444444444444,
+        -0.9166666666666666
+      ],
+      "positive_worlds": 26,
+      "negative_worlds": 88,
+      "ties": 30
+    },
+    "action_model_minus_bayesian_shift+dropout_food": {
+      "n_worlds": 144,
+      "mean": -2.1666666666666665,
+      "bootstrap_95": [
+        -2.486111111111111,
+        -1.8541666666666667
+      ],
+      "positive_worlds": 11,
+      "negative_worlds": 112,
+      "ties": 21
+    },
+    "action_model_minus_shuffled_action_stable_food": {
+      "n_worlds": 144,
+      "mean": 2.0555555555555554,
+      "bootstrap_95": [
+        1.75,
+        2.3680555555555554
+      ],
+      "positive_worlds": 103,
+      "negative_worlds": 1,
+      "ties": 40
+    },
+    "action_model_minus_shuffled_action_shift+dropout_food": {
+      "n_worlds": 144,
+      "mean": 0.7361111111111112,
+      "bootstrap_95": [
+        0.6111111111111112,
+        0.875
+      ],
+      "positive_worlds": 78,
+      "negative_worlds": 1,
+      "ties": 65
+    }
+  }
+}
