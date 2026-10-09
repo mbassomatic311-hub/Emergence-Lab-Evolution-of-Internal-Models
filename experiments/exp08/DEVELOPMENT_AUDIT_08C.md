@@ -66,7 +66,7 @@ OPENBLAS_NUM_THREADS=1 python audit08c_learning.py --out /tmp/audit08c --train 1
 OPENBLAS_NUM_THREADS=1 python audit08c_sensitivity.py --out /tmp/audit08c --epochs 36
 ```
 
-Compare generated `summary.json` and `initialization_sensitivity.json` against the committed versions under `development_identifiability_08c/`. The primary fit weights are recorded in `weights.json` for exact traceability. See GitHub Actions workflow for strict numeric reproduction checks. The original prior 08B reports and results remain intact.
+Compare generated `summary.json` and `initialization_sensitivity.json` against the committed versions under `development_identifiability_08c/`. The trained primary weights are in the separately downloadable full 08C audit ZIP (`development_identifiability_08c/weights.json`); the lightweight GitHub import contains the deterministic training source, seeds, summary and sensitivity data, so these weights can be regenerated exactly. The weights have not been uploaded to GitHub. See GitHub Actions workflow for strict numeric reproduction checks. The original prior 08B reports and results remain intact.
 
 ## Decision gate
 
