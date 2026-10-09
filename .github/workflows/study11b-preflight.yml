@@ -1,0 +1,61 @@
+name: Study 11B public tactile detection event preflight
+
+on:
+  push:
+    branches: ["research/study11b-tactile-eeg-alignment"]
+    paths:
+      - "studies/neural_detection11b/*.py"
+      - "studies/neural_detection11b/README.md"
+      - ".github/workflows/study11b-preflight.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  event-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout research branch
+        uses: actions/checkout@v4
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run synthetic safety tests (no public records used)
+        working-directory: studies/neural_detection11b
+        run: python -m unittest -v test_audit_events.py
+      - name: Audit real public event metadata at pinned OpenNeuro commit
+        working-directory: studies/neural_detection11b
+        run: python audit_events.py --output event_audit_aggregate.json
+      - name: Compare with independently inspected aggregate and block EEG claims
+        working-directory: studies/neural_detection11b
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('event_audit_aggregate.json').read_text())
+          assert d['participants_in_public_tsv']==18
+          assert d['starts']==8690
+          assert d['outcome_complete']==8662
+          assert d['unpaired_or_ambiguous_outcomes']==28
+          assert d['participants_with_500_starts']==16
+          assert d['participants_with_fewer_starts']==2
+          assert d['nominal_window_not_eeg_verified'] is True
+          assert d['data_examined']=='public BIDS event metadata only; no EEG data or human-level predictors'
+          assert d['valid_joint_labels']<=d['outcome_complete']
+          assert d['usable_nominal_windows']<=d['valid_joint_labels']
+          print('Event audit is consistent with original inspection. No neural result was computed.')
+          PY
+      - name: Ensure only aggregated public metadata is committed
+        run: |
+          test -f studies/neural_detection11b/event_audit_aggregate.json
+          test "$(find studies/neural_detection11b -type f \( -name '*.set' -o -name '*.fdt' -o -name '*trial*.csv' \) | wc -l)" -eq 0
+      - name: Publish validated aggregate to draft research branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add studies/neural_detection11b/event_audit_aggregate.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Record verified Study 11B aggregate BIDS event quality checks"
+            git push origin HEAD:research/study11b-tactile-eeg-alignment
+          fi
