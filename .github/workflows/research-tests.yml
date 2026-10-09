@@ -1,0 +1,43 @@
+name: Reproducibility smoke tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Experiment 06 tests
+        working-directory: experiments/exp06
+        run: python -m unittest -v test_engine.py
+      - name: Experiment 07 and independent benchmark parity
+        working-directory: experiments/exp07
+        run: |
+          python -m unittest -v test_engine07.py test_audit08a_independent_baseline.py test_audit08a_parity.py
+      - name: Reproduce post-hoc benchmark summary
+        working-directory: experiments/exp07
+        run: |
+          mkdir -p /tmp/emergence-benchmark
+          python audit08a_independent_baseline.py --previous-csv primary/results_per_seed.csv --out /tmp/emergence-benchmark
+          python - <<'PY'
+          import json, math
+          from pathlib import Path
+          expected = json.loads(Path('audit08a_benchmark_summary.json').read_text())
+          actual = json.loads(Path('/tmp/emergence-benchmark/benchmark_summary.json').read_text())
+          assert expected['n_independent_seed_worlds'] == actual['n_independent_seed_worlds']
+          for key, value in expected['means'].items():
+              assert math.isclose(value, actual['means'][key], rel_tol=0, abs_tol=1e-12), key
+          for key in ('paired_comparator_minus_naive_reversal','paired_evolved_minus_comparator_reversal'):
+              assert math.isclose(expected[key]['mean_difference'], actual[key]['mean_difference'], rel_tol=0, abs_tol=1e-12), key
+          print('Benchmark numerical summary reproduced.')
+          PY
