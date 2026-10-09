@@ -1,0 +1,40 @@
+{
+  "analysis_type": "POST-HOC exploratory benchmark, not preregistered",
+  "n_independent_seed_worlds": 32,
+  "evaluation_episodes_per_seed": 768,
+  "controllers": {
+    "comparator": "one-step prediction-error motor polarity estimator (non-evolved)",
+    "naive": "fixed polarity assumption, reactive non-evolved"
+  },
+  "means": {
+    "comparator_stable_food": 8.310343424479166,
+    "comparator_stable_survival": 1,
+    "comparator_reversal_food": 7.854939778645834,
+    "comparator_reversal_survival": 1,
+    "naive_stable_food": 4.247233072916666,
+    "naive_stable_survival": 0.74853515625,
+    "naive_reversal_food": 2.056111653645833,
+    "naive_reversal_survival": 0.7515055338541667,
+    "evolved_reversal_food": 5.072347005208333
+  },
+  "paired_comparator_minus_naive_reversal": {
+    "mean_difference": 5.798828125,
+    "ci95_percentile": [
+      5.776407877604168,
+      5.820475260416666
+    ],
+    "n_positive": 32,
+    "n_negative": 0,
+    "n_tied": 0
+  },
+  "paired_evolved_minus_comparator_reversal": {
+    "mean_difference": -2.7825927734375,
+    "ci95_percentile": [
+      -3.6589640299479167,
+      -1.9395975748697918
+    ],
+    "n_positive": 0,
+    "n_negative": 32,
+    "n_tied": 0
+  }
+}
