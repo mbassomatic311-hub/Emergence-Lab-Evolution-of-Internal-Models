@@ -1,0 +1,32 @@
+{
+  "dataset": "OpenNeuro ds006648 v1.0.0; NEMAR on006648 v1.0.0",
+  "status": "REAL PUBLIC BEHAVIORAL SCHEMA INSPECTED; no EEG data, no event/ratings join",
+  "source_file": "derivatives/Behavioural_Ratings/P101.csv",
+  "source_bytes": 13773,
+  "source_encoding": "cp1252",
+  "rows": 210,
+  "columns": [
+    "PoemName",
+    "PoemType",
+    "Block",
+    "AA",
+    "Imagery",
+    "Moved",
+    "Originality",
+    "Creativity"
+  ],
+  "dtypes": {
+    "PoemName": "object",
+    "PoemType": "object",
+    "Block": "object",
+    "AA": "int64",
+    "Imagery": "int64",
+    "Moved": "int64",
+    "Originality": "int64",
+    "Creativity": "int64"
+  },
+  "ratings_stored": false,
+  "eeg_fetched": false,
+  "events_matched": false,
+  "preflight_only": true
+}

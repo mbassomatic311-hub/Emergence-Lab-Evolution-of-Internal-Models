@@ -1,0 +1,22 @@
+{
+  "status": "PUBLIC EVENT METADATA ONLY; no EEG signals or human ratings analyzed",
+  "source_commit": "b7e80bf9d225e8a5be06ee8358b7484972464edd",
+  "source_dataset_doi": "10.18112/openneuro.ds006648.v1.0.0",
+  "participants_audited": 47,
+  "published_ratings_per_participant": 210,
+  "text_onset_distribution": {
+    "212": 47
+  },
+  "difference_vs_210_distribution": {
+    "2": 47
+  },
+  "leading_task_markers_distribution": {
+    "": 18,
+    "65284": 29
+  },
+  "ordering_errors_total": 0,
+  "duration_errors_total": 0,
+  "ratings_to_events_join_verified": false,
+  "candidate_pre_rating_window": "65282 text onset through before 65284 rating onset",
+  "stop_reason": "Event codes lack poem identity; behavioral rows lack time/trial index; extra trials are unidentified."
+}

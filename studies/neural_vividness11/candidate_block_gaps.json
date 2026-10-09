@@ -1,0 +1,21 @@
+{
+  "status": "POST-HOC timing pattern exploration; NOT verified practice-trial or poem identity",
+  "participants": 47,
+  "consistent_212_onsets": 47,
+  "candidate_boundaries_after_presentations": [
+    2,
+    32,
+    62,
+    92,
+    122,
+    152,
+    182
+  ],
+  "cutoff_inference": "Two candidate introduction sequences followed by seven blocks of thirty",
+  "participants_all_7_boundary_gaps_gt_internal_median_plus_10s": 24,
+  "participants_min_boundary_gap_gt_within_block_median": 41,
+  "median_candidate_gap_seconds": 58.193,
+  "median_internal_gap_seconds": 25.597,
+  "join_verified": false,
+  "required_fix": "Experiment owner must verify practice trials and supply participant-specific actual stimulus presentation sequence or equivalent event-to-poem keyed log"
+}

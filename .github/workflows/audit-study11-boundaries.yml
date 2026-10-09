@@ -1,0 +1,43 @@
+name: Study 11 potential introductory-trial boundary audit
+on:
+  push:
+    branches: [research/study11-human-eeg-preflight]
+    paths:
+      - studies/neural_vividness11/audit_block_gaps.py
+      - studies/neural_vividness11/test_audit_block_gaps.py
+      - .github/workflows/audit-study11-boundaries.yml
+permissions:
+  contents: write
+jobs:
+  inspect-public-timing-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test candidate pause detection on synthetic data
+        working-directory: studies/neural_vividness11
+        run: python -m unittest -v test_audit_block_gaps.py
+      - name: Compute block-pause metadata over all public participants
+        working-directory: studies/neural_vividness11
+        run: python audit_block_gaps.py --out candidate_block_gaps.json
+      - name: Reject any unearned alignment verification
+        working-directory: studies/neural_vividness11
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('candidate_block_gaps.json'))
+          assert d['participants']==47
+          assert d['join_verified'] is False
+          assert d['candidate_boundaries_after_presentations']==[2,32,62,92,122,152,182]
+          print("Unverified candidate only; no EEG/behavioral join has been fabricated.")
+          PY
+      - name: Archive aggregate candidate-gap result only
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add studies/neural_vividness11/candidate_block_gaps.json
+          git commit -m "Publish aggregate candidate block-gap evidence; leave alignment unverified"
+          git push origin HEAD:research/study11-human-eeg-preflight

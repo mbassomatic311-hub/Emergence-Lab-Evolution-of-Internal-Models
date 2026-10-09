@@ -1,0 +1,45 @@
+name: Audit all 47 public Study 11 EEG event files
+on:
+  push:
+    branches: [research/study11-human-eeg-preflight]
+    paths:
+      - studies/neural_vividness11/audit_event_counts.py
+      - studies/neural_vividness11/test_audit_event_counts.py
+      - .github/workflows/audit-study11-events.yml
+permissions:
+  contents: write
+jobs:
+  audit-public-event-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify synthetic event-integrity tests
+        working-directory: studies/neural_vividness11
+        run: python -m unittest -v test_audit_event_counts.py
+      - name: Audit metadata for all 47 participants
+        working-directory: studies/neural_vividness11
+        run: python audit_event_counts.py --out event_structure
+      - name: Confirm findings remain strictly unaligned metadata
+        working-directory: studies/neural_vividness11
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('event_structure/summary.json').read_text())
+          assert p['participants_audited']==47
+          assert p['ratings_to_events_join_verified'] is False
+          assert p['source_commit']=='b7e80bf9d225e8a5be06ee8358b7484972464edd'
+          assert p['status'].startswith('PUBLIC EVENT METADATA ONLY')
+          print('Validated 47-participant audit WITHOUT human EEG or behavioral join.')
+          PY
+      - name: Commit public event COUNTS only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add studies/neural_vividness11/event_structure/summary.json studies/neural_vividness11/event_structure/per_subject_event_counts.csv
+          git commit -m "Audit 47 event streams and preserve unverified rating alignment"
+          git push origin HEAD:research/study11-human-eeg-preflight

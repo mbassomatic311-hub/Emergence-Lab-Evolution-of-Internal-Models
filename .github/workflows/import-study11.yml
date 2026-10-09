@@ -1,0 +1,74 @@
+name: Import Study 11 human EEG methods preflight
+on:
+  push:
+    branches: ["research/study11-human-eeg-preflight"]
+    paths: ["STUDY11_IMPORT.txt"]
+permissions:
+  contents: write
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate source checksums and extract safe research files
+        run: |
+          python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import base64,hashlib,io,lzma,tarfile
+          payload=base64.b64decode(Path('STUDY11_IMPORT.txt').read_text().strip(),validate=True)
+          expected='1d007bff3f91f8c39bde2f2e2c20f36c33c9107f6a4e5751594ccc9ed986bb42'
+          if hashlib.sha256(payload).hexdigest()!=expected:raise SystemExit('Compressed package checksum mismatch')
+          raw=lzma.decompress(payload,memlimit=256_000_000)
+          if len(raw)>200_000:raise SystemExit('Unexpected archive size')
+          with tarfile.open(fileobj=io.BytesIO(raw),mode='r:') as tar:
+              members=tar.getmembers()
+              names={m.name for m in members}
+              if len(members)!=6 or len(names)!=6:raise SystemExit('Unexpected file count')
+              content={}
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if not m.isfile() or m.size>40_000 or p.is_absolute() or '..' in p.parts or p.parts[:2]!=('studies','neural_vividness11') or Path(m.name).exists():
+                      raise SystemExit('Unsafe/overwriting source: '+m.name)
+                  content[m.name]=tar.extractfile(m).read()
+              manifest='studies/neural_vividness11/SHA256SUMS.txt'
+              checks={}
+              for line in content[manifest].decode().splitlines():
+                  digest,path=line.split('  ',1)
+                  if path in checks or len(digest)!=64:raise SystemExit('Invalid integrity manifest')
+                  checks[path]=digest
+              if set(checks)!=(names-{manifest}):raise SystemExit('Incomplete integrity manifest')
+              for path,digest in checks.items():
+                  if hashlib.sha256(content[path]).hexdigest()!=digest:
+                      raise SystemExit('Source digest mismatch: '+path)
+              for path,data in content.items():
+                  p=Path(path);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+          print('Validated 6 source/documentation/checksum files; no human data are included.')
+          PY
+      - name: Install analysis dependencies
+        working-directory: studies/neural_vividness11
+        run: python -m pip install -r requirements.txt
+      - name: Run eight synthetic software and leakage-gate tests
+        working-directory: studies/neural_vividness11
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: python -m unittest -v test_evaluate.py
+      - name: Reject public human-level results and incomplete data
+        shell: bash
+        run: |
+          if find studies/neural_vividness11 -type f \( -name '*joined*.csv' -o -name 'predictions.csv' -o -name '*_eeg.set' -o -name '*_eeg.edf' \) | grep -q .; then
+            echo "Refusing to commit individual human recordings, linked trials or predictions"
+            exit 1
+          fi
+          echo "Only source, methods, and synthetic tests are present."
+      - name: Commit independently tested methods to draft branch
+        shell: bash
+        run: |
+          rm -f STUDY11_IMPORT.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "Add Study 11 human EEG dataset preflight and leakage-safe model comparison"
+          git push origin HEAD:research/study11-human-eeg-preflight
