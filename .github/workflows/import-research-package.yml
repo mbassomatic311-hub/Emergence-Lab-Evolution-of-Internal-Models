@@ -1,0 +1,84 @@
+name: Import Emergence Lab research archive
+on:
+  push:
+    paths:
+      - 'Emergence_Lab_GitHub_Starter.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import-research:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Verify ZIP and SHA-256 manifest, then extract
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import hashlib
+          import zipfile
+
+          archive = Path('Emergence_Lab_GitHub_Starter.zip')
+          if not archive.is_file():
+              raise SystemExit('Expected research ZIP is missing at repository root')
+
+          with zipfile.ZipFile(archive) as z:
+              members = [m for m in z.infolist() if not m.is_dir()]
+              names = {m.filename for m in members}
+              if len(members) != 186 or len(names) != 186:
+                  raise SystemExit(f'Unexpected research archive: {len(members)} entries')
+              if not {'README.md', 'SHA256SUMS.txt', 'docs/RESEARCH_STATUS.md', 'experiments/exp07/README.md'} <= names:
+                  raise SystemExit('Research archive is missing key files')
+              if z.testzip() is not None:
+                  raise SystemExit('ZIP CRC verification failed')
+              allowed_roots = {'README.md', '.gitignore', 'SHA256SUMS.txt', 'requirements.txt', 'docs', 'experiments'}
+              total = 0
+              for m in members:
+                  p = PurePosixPath(m.filename)
+                  if (p.is_absolute() or '..' in p.parts or '\\' in m.filename or
+                      (p.parts and p.parts[0] not in allowed_roots)):
+                      raise SystemExit(f'Unsafe entry: {m.filename}')
+                  total += m.file_size
+              if total > 50_000_000:
+                  raise SystemExit('Archive exceeds size limit')
+
+              manifest = z.read('SHA256SUMS.txt').decode('utf-8').splitlines()
+              checks = {}
+              for line in manifest:
+                  digest, filename = line.split('  ', 1)
+                  if filename in checks or filename not in names or len(digest) != 64:
+                      raise SystemExit(f'Bad checksum manifest entry: {filename}')
+                  checks[filename] = digest
+              if set(checks) != names - {'SHA256SUMS.txt'}:
+                  raise SystemExit('Manifest does not cover every research file')
+              for m in members:
+                  if m.filename == 'SHA256SUMS.txt':
+                      continue
+                  if hashlib.sha256(z.read(m)).hexdigest() != checks[m.filename]:
+                      raise SystemExit(f'SHA-256 mismatch: {m.filename}')
+              for m in members:
+                  p = Path(m.filename)
+                  p.parent.mkdir(parents=True, exist_ok=True)
+                  p.write_bytes(z.read(m))
+              print(f'Validated and extracted {len(members)} files.')
+          PY
+
+      - name: Commit extracted research files
+        shell: bash
+        run: |
+          rm -f Emergence_Lab_GitHub_Starter.zip
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "Import verified Emergence Lab experiments 01-07"
+            git push origin HEAD:main
+          fi
