@@ -5,6 +5,8 @@ on:
     paths:
       - "studies/neural_detection11b/behavioral_models.py"
       - "studies/neural_detection11b/test_behavioral_models.py"
+      - "studies/neural_detection11b/staircase_controls.py"
+      - "studies/neural_detection11b/test_staircase_controls.py"
       - ".github/workflows/study11b-behavioral-models.yml"
 permissions:
   contents: write
@@ -21,12 +23,17 @@ jobs:
         run: python -m pip install "numpy==2.2.6" "scikit-learn==1.6.1"
       - name: Test seven synthetic trial/history/leakage invariants
         working-directory: studies/neural_detection11b
-        run: python -m unittest -v test_behavioral_models.py
+        run: python -m unittest -v test_behavioral_models.py test_staircase_controls.py
       - name: Fit exploratory participant-forward REAL published behavior, no EEG
         working-directory: studies/neural_detection11b
         env:
           OPENBLAS_NUM_THREADS: "1"
         run: python behavioral_models.py
+      - name: Recheck serial dependence controlling physical stimulus staircase and lags
+        working-directory: studies/neural_detection11b
+        env:
+          OPENBLAS_NUM_THREADS: "1"
+        run: python staircase_controls.py
       - name: Guard output content against participant records and implausible counts
         working-directory: studies/neural_detection11b
         run: |
@@ -39,13 +46,19 @@ jobs:
           assert "NO EEG" in z["research_status"]
           assert all(len(p["descriptive_95pct_bootstrap"])==2 for p in z["contrasts"])
           assert not any(key in z for key in ("trial_predictions","participant_ids","per_subject"))
+          s=json.loads(Path("staircase_control_aggregate.json").read_text())
+          assert s["independent_participants"]==18
+          assert s["n_training_trials"]==z["n_training_trials"]
+          assert s["n_heldout_trials"]==z["n_heldout_trials"]
+          assert len(s["contrasts"])==4
+          assert "NO EEG" in s["research_status"]
           print("Validated aggregate-only prospective prediction metrics")
           PY
       - name: Commit ONLY aggregate behavioral results to draft study
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add studies/neural_detection11b/behavioral_aggregate.json
+          git add studies/neural_detection11b/behavioral_aggregate.json studies/neural_detection11b/staircase_control_aggregate.json
           if ! git diff --cached --quiet; then
             git commit -m "Record exploratory Study 11B prospective behavioral baselines (no EEG)"
             git push origin HEAD:research/study11b-tactile-eeg-alignment
