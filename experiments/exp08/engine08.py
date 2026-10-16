@@ -114,7 +114,7 @@ def run_benchmark(n_worlds=100, budget=32, initial=8, base_seed=20261015):
         boot=np.array([np.mean(rng.choice(diffs,size=len(diffs),replace=True)) for _ in range(10000)])
         contrasts[f"{left}_minus_{right}_mse"]={"mean_difference":float(np.mean(diffs)),
             "bootstrap_95_ci":[float(np.quantile(boot,.025)),float(np.quantile(boot,.975))],
-            "worlds_left_better":int(np.sum(diffs>0)),"worlds_right_better":int(np.sum(diffs<0)),
+            "worlds_right_better":int(np.sum(diffs>0)),"worlds_left_better":int(np.sum(diffs<0)),
             "ties":int(np.sum(diffs==0))}
     return {"config":{"n_worlds":n_worlds,"budget":budget,"initial":initial,"base_seed":base_seed},
             "summary":summary,"contrasts":contrasts,"rows":rows}
