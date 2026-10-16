@@ -37,3 +37,7 @@ python engine10.py --worlds 100 --budget 48 --initial 12 --seed 20261017 --out e
 3. Test target compositions absent from the candidate library.
 4. Compare active sampling to passive sampling with matched seeds and budgets.
 5. Check whether improved prediction actually coincides with recovery of the true term.
+
+
+## Automated check
+The repository's research-experiment workflow runs the unit tests and a 20-world smoke benchmark for pull requests touching Exp09/Exp10. This smoke run checks execution and output shape; it is not a confirmatory statistical result.
