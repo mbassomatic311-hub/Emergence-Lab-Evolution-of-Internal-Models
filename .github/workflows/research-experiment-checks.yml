@@ -1,0 +1,39 @@
+name: Research experiment checks
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/exp09/**'
+      - 'experiments/exp10/**'
+      - '.github/workflows/research-experiment-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exp10-tests-and-smoke-benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependency
+        run: python -m pip install numpy
+      - name: Run Exp10 unit tests
+        working-directory: experiments/exp10
+        run: python -m unittest -v
+      - name: Run 20-world smoke benchmark
+        working-directory: experiments/exp10
+        run: python engine10.py --worlds 20 --budget 36 --initial 10 --seed 20261017 --out /tmp/exp10_smoke_results.json
+      - name: Print benchmark summary
+        run: |
+          python - <<'PY'
+          import json
+          with open('/tmp/exp10_smoke_results.json', encoding='utf-8') as f:
+              result = json.load(f)
+          print(json.dumps({'config': result['config'], 'summary': result['summary'], 'contrasts': result['contrasts']}, indent=2))
+          PY
