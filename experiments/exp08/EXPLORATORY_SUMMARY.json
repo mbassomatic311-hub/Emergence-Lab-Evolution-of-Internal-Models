@@ -1,0 +1,62 @@
+{
+  "config": {
+    "n_worlds": 500,
+    "budget": 32,
+    "initial": 8,
+    "base_seed": 20261015,
+    "noise_sd": 0.05
+  },
+  "summary": {
+    "fixed_linear": {
+      "mean_test_mse": 0.1204725922,
+      "median_test_mse": 0.09990364764,
+      "model_accuracy": 0.246,
+      "n_worlds": 500
+    },
+    "passive": {
+      "mean_test_mse": 0.0003718061125,
+      "median_test_mse": 0.0002883730553,
+      "model_accuracy": 0.966,
+      "n_worlds": 500
+    },
+    "active": {
+      "mean_test_mse": 0.0002952247446,
+      "median_test_mse": 0.0002396191744,
+      "model_accuracy": 0.98,
+      "n_worlds": 500
+    }
+  },
+  "contrasts": {
+    "passive_minus_active_mse": {
+      "mean_difference": 0.00007658136788,
+      "bootstrap_95_ci": [
+        0.00004328262305,
+        0.0001123674259
+      ],
+      "worlds_left_better": 285,
+      "worlds_right_better": 215,
+      "ties": 0
+    },
+    "fixed_linear_minus_passive_mse": {
+      "mean_difference": 0.1201007861,
+      "bootstrap_95_ci": [
+        0.1101343762,
+        0.1306647099
+      ],
+      "worlds_left_better": 377,
+      "worlds_right_better": 17,
+      "ties": 106
+    },
+    "fixed_linear_minus_active_mse": {
+      "mean_difference": 0.1201773675,
+      "bootstrap_95_ci": [
+        0.1100090695,
+        0.1303646273
+      ],
+      "worlds_left_better": 453,
+      "worlds_right_better": 47,
+      "ties": 0
+    }
+  },
+  "note": "Summary only. The full run output includes per-world records and is reproducible with the documented command. Exploratory; not confirmatory."
+}
