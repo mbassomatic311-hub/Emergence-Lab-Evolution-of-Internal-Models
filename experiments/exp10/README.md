@@ -40,4 +40,4 @@ python engine10.py --worlds 100 --budget 48 --initial 12 --seed 20261017 --out e
 
 
 ## Automated check
-The repository's research-experiment workflow runs the unit tests and a 20-world smoke benchmark for pull requests touching Exp09/Exp10. This smoke run checks execution and output shape; it is not a confirmatory statistical result.
+The repository's research-experiment workflow runs the unit tests and a 20-world smoke benchmark for pull requests touching Exp09/Exp10. This smoke run checks execution and output shape; it is not a confirmatory statistical result. The workflow checks out the pull-request merge ref by default so it can test the submitted branch without a manually constructed ref.
