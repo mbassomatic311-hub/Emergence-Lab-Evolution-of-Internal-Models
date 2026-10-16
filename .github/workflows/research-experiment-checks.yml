@@ -5,6 +5,7 @@ on:
     paths:
       - 'experiments/exp09/**'
       - 'experiments/exp10/**'
+      - 'experiments/exp11/**'
       - '.github/workflows/research-experiment-checks.yml'
   workflow_dispatch:
 
@@ -24,14 +25,22 @@ jobs:
       - name: Run Exp10 unit tests
         working-directory: experiments/exp10
         run: python -m unittest -v
-      - name: Run 20-world smoke benchmark
+      - name: Run Exp10 smoke benchmark
         working-directory: experiments/exp10
         run: python engine10.py --worlds 20 --budget 36 --initial 10 --seed 20261017 --out /tmp/exp10_smoke_results.json
-      - name: Print benchmark summary
+      - name: Run Exp11 unit tests
+        working-directory: experiments/exp11
+        run: python -m unittest -v
+      - name: Run Exp11 held-out smoke benchmark
+        working-directory: experiments/exp11
+        run: python engine11.py --worlds 6 --budget 18 --initial 8 --seed 20261018 --out /tmp/exp11_smoke_results.json
+      - name: Print benchmark summaries
         run: |
           python - <<'PY'
           import json
-          with open('/tmp/exp10_smoke_results.json', encoding='utf-8') as f:
-              result = json.load(f)
-          print(json.dumps({'config': result['config'], 'summary': result['summary'], 'contrasts': result['contrasts']}, indent=2))
+          for path in ('/tmp/exp10_smoke_results.json', '/tmp/exp11_smoke_results.json'):
+              with open(path, encoding='utf-8') as f:
+                  result = json.load(f)
+              print(f'\\n=== {path} ===')
+              print(json.dumps({'config': result['config'], 'summary': result['summary'], 'contrasts': result['contrasts']}, indent=2))
           PY
